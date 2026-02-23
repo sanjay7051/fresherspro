@@ -1,10 +1,12 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Sparkles } from "lucide-react";
+import { ArrowLeft, Sparkles, Download, Lock } from "lucide-react";
+import { toast } from "@/components/ui/sonner";
+import html2pdf from "html2pdf.js";
 
 interface ResumeData {
   fullName: string;
@@ -36,16 +38,34 @@ const emptyResume: ResumeData = {
   careerObjective: "",
 };
 
-const ResumePreview = ({ data }: { data: ResumeData }) => {
+const RAZORPAY_KEY = "rzp_test_XXXXXXXXXXXXXXXXX"; // Replace with your Razorpay test key
+const PRICE_AMOUNT = 4900; // ₹49 in paise
+
+const loadRazorpayScript = (): Promise<boolean> => {
+  return new Promise((resolve) => {
+    if ((window as any).Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
+const ResumePreview = ({ data, isPaid, previewRef }: { data: ResumeData; isPaid: boolean; previewRef: React.RefObject<HTMLDivElement> }) => {
   const skills = data.skills.split(",").map((s) => s.trim()).filter(Boolean);
 
   return (
     <div
+      ref={previewRef}
       className="relative no-select bg-card border border-border rounded-lg p-8 min-h-[700px] shadow-sm text-sm"
       onContextMenu={(e) => e.preventDefault()}
     >
-      {/* Watermark */}
-      <div className="watermark" />
+      {/* Watermark - hidden when paid */}
+      {!isPaid && <div className="watermark" />}
 
       {/* Header */}
       <div className="border-b-2 border-primary pb-4 mb-4">
@@ -142,6 +162,8 @@ const ResumePreview = ({ data }: { data: ResumeData }) => {
 
 const ResumeBuilder = () => {
   const [data, setData] = useState<ResumeData>(emptyResume);
+  const [isPaid, setIsPaid] = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const update = useCallback(
     (field: keyof ResumeData) =>
@@ -149,6 +171,63 @@ const ResumeBuilder = () => {
         setData((prev) => ({ ...prev, [field]: e.target.value })),
     []
   );
+
+  const handleDownloadPDF = async () => {
+    if (!previewRef.current) return;
+    const element = previewRef.current;
+    const opt = {
+      margin: 0.3,
+      filename: `${data.fullName || "Resume"}_FreshersPro.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+    };
+    await html2pdf().set(opt).from(element).save();
+    toast.success("Resume downloaded successfully!");
+  };
+
+  const handlePayAndDownload = async () => {
+    if (isPaid) {
+      handleDownloadPDF();
+      return;
+    }
+
+    const loaded = await loadRazorpayScript();
+    if (!loaded) {
+      toast.error("Failed to load Razorpay. Check your internet connection.");
+      return;
+    }
+
+    const options = {
+      key: RAZORPAY_KEY,
+      amount: PRICE_AMOUNT,
+      currency: "INR",
+      name: "FreshersPro",
+      description: "Unlock Watermark-Free Resume PDF",
+      handler: () => {
+        setIsPaid(true);
+        toast.success("Payment successful! Downloading your resume...");
+        setTimeout(() => handleDownloadPDF(), 500);
+      },
+      prefill: {
+        name: data.fullName,
+        email: data.email,
+        contact: data.phone,
+      },
+      theme: { color: "#0d9488" },
+      modal: {
+        ondismiss: () => {
+          toast.error("Payment cancelled. Watermark remains.");
+        },
+      },
+    };
+
+    const rzp = new (window as any).Razorpay(options);
+    rzp.on("payment.failed", () => {
+      toast.error("Payment failed. Please try again.");
+    });
+    rzp.open();
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -267,7 +346,18 @@ const ResumeBuilder = () => {
           {/* RIGHT: Preview */}
           <div className="lg:sticky lg:top-20 lg:self-start">
             <h2 className="text-xl font-bold text-foreground mb-4">Live Preview</h2>
-            <ResumePreview data={data} />
+            <ResumePreview data={data} isPaid={isPaid} previewRef={previewRef} />
+            <Button
+              onClick={handlePayAndDownload}
+              className="w-full mt-4 gap-2"
+              size="lg"
+            >
+              {isPaid ? (
+                <><Download className="h-4 w-4" /> Download PDF</>
+              ) : (
+                <><Lock className="h-4 w-4" /> Unlock & Download PDF – ₹49</>
+              )}
+            </Button>
           </div>
         </div>
       </div>
