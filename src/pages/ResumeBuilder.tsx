@@ -38,22 +38,9 @@ const emptyResume: ResumeData = {
   careerObjective: "",
 };
 
-const RAZORPAY_KEY = "rzp_test_XXXXXXXXXXXXXXXXX"; // Replace with your Razorpay test key
 const PRICE_AMOUNT = 4900; // ₹49 in paise
-
-const loadRazorpayScript = (): Promise<boolean> => {
-  return new Promise((resolve) => {
-    if ((window as any).Razorpay) {
-      resolve(true);
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-};
+// TODO: Re-enable Razorpay integration once RAZORPAY_KEY_ID is configured
+const USE_MOCK_PAYMENT = true;
 
 const ResumePreview = ({ data, isPaid, previewRef }: { data: ResumeData; isPaid: boolean; previewRef: React.RefObject<HTMLDivElement> }) => {
   const skills = data.skills.split(",").map((s) => s.trim()).filter(Boolean);
@@ -192,41 +179,19 @@ const ResumeBuilder = () => {
       return;
     }
 
-    const loaded = await loadRazorpayScript();
-    if (!loaded) {
-      toast.error("Failed to load Razorpay. Check your internet connection.");
+    if (USE_MOCK_PAYMENT) {
+      // Mock payment for testing UI flow
+      toast.info("Mock payment: simulating success...");
+      setTimeout(() => {
+        setIsPaid(true);
+        toast.success("Mock payment successful! Downloading your resume...");
+        setTimeout(() => handleDownloadPDF(), 500);
+      }, 1000);
       return;
     }
 
-    const options = {
-      key: RAZORPAY_KEY,
-      amount: PRICE_AMOUNT,
-      currency: "INR",
-      name: "FreshersPro",
-      description: "Unlock Watermark-Free Resume PDF",
-      handler: () => {
-        setIsPaid(true);
-        toast.success("Payment successful! Downloading your resume...");
-        setTimeout(() => handleDownloadPDF(), 500);
-      },
-      prefill: {
-        name: data.fullName,
-        email: data.email,
-        contact: data.phone,
-      },
-      theme: { color: "#0d9488" },
-      modal: {
-        ondismiss: () => {
-          toast.error("Payment cancelled. Watermark remains.");
-        },
-      },
-    };
-
-    const rzp = new (window as any).Razorpay(options);
-    rzp.on("payment.failed", () => {
-      toast.error("Payment failed. Please try again.");
-    });
-    rzp.open();
+    // TODO: Real Razorpay integration will go here
+    toast.error("Razorpay is not configured yet.");
   };
 
   return (
