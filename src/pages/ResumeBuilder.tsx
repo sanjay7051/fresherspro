@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, Sparkles, Download, Lock } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
+import { supabase } from "@/integrations/supabase/client";
 import html2pdf from "html2pdf.js";
 
 interface ResumeData {
@@ -39,8 +40,6 @@ const emptyResume: ResumeData = {
 };
 
 const PRICE_AMOUNT = 4900; // ₹49 in paise
-// TODO: Re-enable Razorpay integration once RAZORPAY_KEY_ID is configured
-const USE_MOCK_PAYMENT = true;
 
 const ResumePreview = ({ data, isPaid, previewRef }: { data: ResumeData; isPaid: boolean; previewRef: React.RefObject<HTMLDivElement> }) => {
   const skills = data.skills.split(",").map((s) => s.trim()).filter(Boolean);
@@ -149,8 +148,11 @@ const ResumePreview = ({ data, isPaid, previewRef }: { data: ResumeData; isPaid:
 
 const ResumeBuilder = () => {
   const [data, setData] = useState<ResumeData>(emptyResume);
-  const [isPaid, setIsPaid] = useState(false);
+  const [downloadToken, setDownloadToken] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
+
+  const isPaid = !!downloadToken;
 
   const update = useCallback(
     (field: keyof ResumeData) =>
@@ -179,19 +181,27 @@ const ResumeBuilder = () => {
       return;
     }
 
-    if (USE_MOCK_PAYMENT) {
-      // Mock payment for testing UI flow
-      toast.info("Mock payment: simulating success...");
-      setTimeout(() => {
-        setIsPaid(true);
-        toast.success("Mock payment successful! Downloading your resume...");
-        setTimeout(() => handleDownloadPDF(), 500);
-      }, 1000);
-      return;
-    }
+    setIsProcessing(true);
+    try {
+      // Call server-side edge function for payment verification
+      const { data: result, error } = await supabase.functions.invoke(
+        "verify-payment",
+        { body: { mock: true } }
+      );
 
-    // TODO: Real Razorpay integration will go here
-    toast.error("Razorpay is not configured yet.");
+      if (error || !result?.download_token) {
+        toast.error("Payment verification failed. Please try again.");
+        return;
+      }
+
+      setDownloadToken(result.download_token);
+      toast.success("Payment verified! Downloading your resume...");
+      setTimeout(() => handleDownloadPDF(), 500);
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -316,11 +326,12 @@ const ResumeBuilder = () => {
               onClick={handlePayAndDownload}
               className="w-full mt-4 gap-2"
               size="lg"
+              disabled={isProcessing}
             >
               {isPaid ? (
                 <><Download className="h-4 w-4" /> Download PDF</>
               ) : (
-                <><Lock className="h-4 w-4" /> Unlock & Download PDF – ₹49</>
+                <><Lock className="h-4 w-4" /> {isProcessing ? "Processing..." : "Unlock & Download PDF – ₹49"}</>
               )}
             </Button>
           </div>
