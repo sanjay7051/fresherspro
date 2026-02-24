@@ -1,6 +1,6 @@
 {
-  "name": "Our FreshersPro",
-  "short_name": "FreshersPro",
+  "name": "FreshersPro",
+  "short_name": "Freshers",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -15,7 +15,7 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#ffffff",
+  "theme_color": "#10b981",
   "background_color": "#ffffff",
   "display": "standalone"
 }
