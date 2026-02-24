@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Sparkles, Download, Lock } from "lucide-react";
+import { ArrowLeft, Sparkles, Download, Lock, Loader2 } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import html2pdf from "html2pdf.js";
@@ -14,6 +14,7 @@ const ResumeBuilder = () => {
   const [data, setData] = useState<ResumeData>(emptyResume);
   const [downloadToken, setDownloadToken] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
   const isPaid = !!downloadToken;
@@ -24,6 +25,49 @@ const ResumeBuilder = () => {
         setData((prev) => ({ ...prev, [field]: e.target.value })),
     []
   );
+
+  const handleGenerateResume = async () => {
+    const hasContent =
+      data.fullName || data.experience || data.projects || data.programmingLanguages || data.degree;
+
+    if (!hasContent) {
+      toast.error("Please fill in at least your name, skills, or education before generating.");
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const { data: enhanced, error } = await supabase.functions.invoke(
+        "enhance-resume",
+        { body: data }
+      );
+
+      if (error) {
+        toast.error("AI enhancement failed. Please try again.");
+        console.error("enhance-resume error:", error);
+        return;
+      }
+
+      setData((prev) => ({
+        ...prev,
+        careerObjective: enhanced.careerObjective || prev.careerObjective,
+        experience: enhanced.experience || prev.experience,
+        projects: enhanced.projects || prev.projects,
+        programmingLanguages: enhanced.programmingLanguages || prev.programmingLanguages,
+        frameworksLibraries: enhanced.frameworksLibraries || prev.frameworksLibraries,
+        toolsPlatforms: enhanced.toolsPlatforms || prev.toolsPlatforms,
+        databases: enhanced.databases || prev.databases,
+        softSkills: enhanced.softSkills || prev.softSkills,
+        certifications: enhanced.certifications || prev.certifications,
+      }));
+
+      toast.success("Resume enhanced with AI! Review the changes below.");
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const handleDownloadPDF = async () => {
     if (!previewRef.current) return;
@@ -80,8 +124,17 @@ const ResumeBuilder = () => {
             <Link to="/ats">
               <Button variant="outline" size="sm">Check ATS Score</Button>
             </Link>
-            <Button size="sm" className="gap-1.5">
-              <Sparkles className="h-3.5 w-3.5" /> Generate Resume
+            <Button
+              size="sm"
+              className="gap-1.5"
+              onClick={handleGenerateResume}
+              disabled={isGenerating}
+            >
+              {isGenerating ? (
+                <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Enhancing...</>
+              ) : (
+                <><Sparkles className="h-3.5 w-3.5" /> AI Enhance Resume</>
+              )}
             </Button>
           </div>
         </div>
@@ -137,8 +190,16 @@ const ResumeBuilder = () => {
               <Input id="programmingLanguages" value={data.programmingLanguages} onChange={update("programmingLanguages")} placeholder="Python, Java, C++, JavaScript" />
             </div>
             <div>
-              <Label htmlFor="toolsTechnologies">Tools & Technologies</Label>
-              <Input id="toolsTechnologies" value={data.toolsTechnologies} onChange={update("toolsTechnologies")} placeholder="React, Node.js, Docker, AWS, Git" />
+              <Label htmlFor="frameworksLibraries">Frameworks & Libraries</Label>
+              <Input id="frameworksLibraries" value={data.frameworksLibraries} onChange={update("frameworksLibraries")} placeholder="React, Node.js, Express, Spring Boot" />
+            </div>
+            <div>
+              <Label htmlFor="toolsPlatforms">Tools & Platforms</Label>
+              <Input id="toolsPlatforms" value={data.toolsPlatforms} onChange={update("toolsPlatforms")} placeholder="Docker, AWS, Git, VS Code, Jira" />
+            </div>
+            <div>
+              <Label htmlFor="databases">Databases</Label>
+              <Input id="databases" value={data.databases} onChange={update("databases")} placeholder="MySQL, MongoDB, PostgreSQL, Redis" />
             </div>
             <div>
               <Label htmlFor="softSkills">Soft Skills</Label>
@@ -146,24 +207,24 @@ const ResumeBuilder = () => {
             </div>
 
             <div>
-              <Label htmlFor="careerObjective">Career Objective</Label>
+              <Label htmlFor="careerObjective">Professional Summary</Label>
               <Textarea
                 id="careerObjective"
                 value={data.careerObjective}
                 onChange={update("careerObjective")}
                 rows={3}
-                placeholder="A motivated computer science graduate seeking..."
+                placeholder="Leave blank and click 'AI Enhance Resume' to auto-generate a professional summary."
               />
             </div>
 
             <div>
-              <Label htmlFor="experience">Experience (one per line)</Label>
+              <Label htmlFor="experience">Experience (one per line, or write paragraphs — AI will format)</Label>
               <Textarea
                 id="experience"
                 value={data.experience}
                 onChange={update("experience")}
                 rows={4}
-                placeholder={"Intern at XYZ Corp — Built REST APIs\nDeveloped CI/CD pipeline for deployment"}
+                placeholder={"Intern at XYZ Corp — Built REST APIs using Node.js\nType 'fresher' if no experience — AI will generate relevant content"}
               />
             </div>
 
@@ -179,15 +240,30 @@ const ResumeBuilder = () => {
             </div>
 
             <div>
-              <Label htmlFor="certifications">Certifications (one per line, optional)</Label>
+              <Label htmlFor="certifications">Certifications (one per line: Name | Organization | Year)</Label>
               <Textarea
                 id="certifications"
                 value={data.certifications}
                 onChange={update("certifications")}
-                rows={2}
-                placeholder={"AWS Cloud Practitioner\nGoogle Data Analytics Certificate"}
+                rows={3}
+                placeholder={"AWS Cloud Practitioner | Amazon | 2024\nGoogle Data Analytics | Google | 2023"}
               />
             </div>
+
+            {/* Mobile AI Enhance button */}
+            <Button
+              onClick={handleGenerateResume}
+              disabled={isGenerating}
+              variant="secondary"
+              className="w-full gap-2 lg:hidden"
+              size="lg"
+            >
+              {isGenerating ? (
+                <><Loader2 className="h-4 w-4 animate-spin" /> Enhancing with AI...</>
+              ) : (
+                <><Sparkles className="h-4 w-4" /> AI Enhance Resume</>
+              )}
+            </Button>
           </div>
 
           {/* RIGHT: Preview */}
