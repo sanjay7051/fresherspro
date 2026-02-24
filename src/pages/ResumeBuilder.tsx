@@ -8,143 +8,7 @@ import { ArrowLeft, Sparkles, Download, Lock } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import html2pdf from "html2pdf.js";
-
-interface ResumeData {
-  fullName: string;
-  phone: string;
-  email: string;
-  linkedin: string;
-  degree: string;
-  college: string;
-  year: string;
-  skills: string;
-  experience: string;
-  projects: string;
-  certifications: string;
-  careerObjective: string;
-}
-
-const emptyResume: ResumeData = {
-  fullName: "",
-  phone: "",
-  email: "",
-  linkedin: "",
-  degree: "",
-  college: "",
-  year: "",
-  skills: "",
-  experience: "",
-  projects: "",
-  certifications: "",
-  careerObjective: "",
-};
-
-const PRICE_AMOUNT = 4900; // ₹49 in paise
-
-const ResumePreview = ({ data, isPaid, previewRef }: { data: ResumeData; isPaid: boolean; previewRef: React.RefObject<HTMLDivElement> }) => {
-  const skills = data.skills.split(",").map((s) => s.trim()).filter(Boolean);
-
-  return (
-    <div
-      ref={previewRef}
-      className="relative no-select bg-card border border-border rounded-lg p-8 min-h-[700px] shadow-sm text-sm"
-      onContextMenu={(e) => e.preventDefault()}
-    >
-      {/* Watermark - hidden when paid */}
-      {!isPaid && <div className="watermark" />}
-
-      {/* Header */}
-      <div className="border-b-2 border-primary pb-4 mb-4">
-        <h2 className="text-2xl font-bold text-foreground">
-          {data.fullName || "Your Full Name"}
-        </h2>
-        <div className="mt-1 flex flex-wrap gap-3 text-xs text-muted-foreground">
-          {data.email && <span>{data.email}</span>}
-          {data.phone && <span>• {data.phone}</span>}
-          {data.linkedin && <span>• {data.linkedin}</span>}
-        </div>
-      </div>
-
-      {/* Career Objective */}
-      {data.careerObjective && (
-        <div className="mb-4">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-primary mb-1">
-            Career Objective
-          </h3>
-          <p className="text-foreground leading-relaxed text-xs">{data.careerObjective}</p>
-        </div>
-      )}
-
-      {/* Education */}
-      {(data.degree || data.college) && (
-        <div className="mb-4">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-primary mb-1">
-            Education
-          </h3>
-          <p className="text-foreground text-xs font-semibold">{data.degree}</p>
-          <p className="text-muted-foreground text-xs">
-            {data.college} {data.year && `• ${data.year}`}
-          </p>
-        </div>
-      )}
-
-      {/* Skills */}
-      {skills.length > 0 && (
-        <div className="mb-4">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-primary mb-1">
-            Skills
-          </h3>
-          <div className="flex flex-wrap gap-1.5">
-            {skills.map((skill) => (
-              <span
-                key={skill}
-                className="rounded bg-accent px-2 py-0.5 text-xs text-accent-foreground"
-              >
-                {skill}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Experience */}
-      {data.experience && (
-        <div className="mb-4">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-primary mb-1">
-            Experience
-          </h3>
-          <p className="whitespace-pre-line text-foreground text-xs leading-relaxed">
-            {data.experience}
-          </p>
-        </div>
-      )}
-
-      {/* Projects */}
-      {data.projects && (
-        <div className="mb-4">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-primary mb-1">
-            Projects
-          </h3>
-          <p className="whitespace-pre-line text-foreground text-xs leading-relaxed">
-            {data.projects}
-          </p>
-        </div>
-      )}
-
-      {/* Certifications */}
-      {data.certifications && (
-        <div className="mb-4">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-primary mb-1">
-            Certifications
-          </h3>
-          <p className="whitespace-pre-line text-foreground text-xs leading-relaxed">
-            {data.certifications}
-          </p>
-        </div>
-      )}
-    </div>
-  );
-};
+import ResumePreview, { type ResumeData, emptyResume } from "@/components/ResumePreview";
 
 const ResumeBuilder = () => {
   const [data, setData] = useState<ResumeData>(emptyResume);
@@ -183,7 +47,6 @@ const ResumeBuilder = () => {
 
     setIsProcessing(true);
     try {
-      // Call server-side edge function for payment verification
       const { data: result, error } = await supabase.functions.invoke(
         "verify-payment",
         { body: { mock: true } }
@@ -268,9 +131,18 @@ const ResumeBuilder = () => {
               </div>
             </div>
 
+            <h3 className="text-md font-semibold text-foreground pt-2">Skills</h3>
             <div>
-              <Label htmlFor="skills">Skills (comma separated)</Label>
-              <Input id="skills" value={data.skills} onChange={update("skills")} placeholder="Python, React, SQL, Machine Learning" />
+              <Label htmlFor="programmingLanguages">Programming Languages</Label>
+              <Input id="programmingLanguages" value={data.programmingLanguages} onChange={update("programmingLanguages")} placeholder="Python, Java, C++, JavaScript" />
+            </div>
+            <div>
+              <Label htmlFor="toolsTechnologies">Tools & Technologies</Label>
+              <Input id="toolsTechnologies" value={data.toolsTechnologies} onChange={update("toolsTechnologies")} placeholder="React, Node.js, Docker, AWS, Git" />
+            </div>
+            <div>
+              <Label htmlFor="softSkills">Soft Skills</Label>
+              <Input id="softSkills" value={data.softSkills} onChange={update("softSkills")} placeholder="Team Leadership, Communication, Problem Solving" />
             </div>
 
             <div>
@@ -285,35 +157,35 @@ const ResumeBuilder = () => {
             </div>
 
             <div>
-              <Label htmlFor="experience">Experience</Label>
+              <Label htmlFor="experience">Experience (one per line)</Label>
               <Textarea
                 id="experience"
                 value={data.experience}
                 onChange={update("experience")}
                 rows={4}
-                placeholder="Intern at XYZ Corp — Built REST APIs..."
+                placeholder={"Intern at XYZ Corp — Built REST APIs\nDeveloped CI/CD pipeline for deployment"}
               />
             </div>
 
             <div>
-              <Label htmlFor="projects">Projects</Label>
+              <Label htmlFor="projects">Projects (one per line)</Label>
               <Textarea
                 id="projects"
                 value={data.projects}
                 onChange={update("projects")}
                 rows={4}
-                placeholder="E-commerce Platform — Built a full-stack..."
+                placeholder={"E-commerce Platform — Full-stack app with React & Node\nChat App — Real-time messaging using WebSocket"}
               />
             </div>
 
             <div>
-              <Label htmlFor="certifications">Certifications (optional)</Label>
+              <Label htmlFor="certifications">Certifications (one per line, optional)</Label>
               <Textarea
                 id="certifications"
                 value={data.certifications}
                 onChange={update("certifications")}
                 rows={2}
-                placeholder="AWS Cloud Practitioner, Google Data Analytics"
+                placeholder={"AWS Cloud Practitioner\nGoogle Data Analytics Certificate"}
               />
             </div>
           </div>
