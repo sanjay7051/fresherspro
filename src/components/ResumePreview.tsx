@@ -45,69 +45,48 @@ const parseBullets = (text: string): string[] =>
     .filter(Boolean);
 
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
-  <div className="mb-1">
-    <h3
-      style={{
-        fontSize: "11px",
-        fontWeight: 700,
-        textTransform: "uppercase",
-        letterSpacing: "0.1em",
-        borderBottom: "1.5px solid #222",
-        paddingBottom: "2px",
-        marginBottom: "6px",
-        color: "#111",
-        fontFamily: "'Inter', Arial, Helvetica, sans-serif",
-      }}
-    >
-      {children}
-    </h3>
-  </div>
+  <h2
+    style={{
+      fontSize: "13px",
+      fontWeight: 700,
+      textTransform: "uppercase",
+      letterSpacing: "0.15em",
+      borderBottom: "1px solid #222",
+      paddingBottom: "6px",
+      marginBottom: "12px",
+      marginTop: "28px",
+    }}
+  >
+    {children}
+  </h2>
 );
 
 const BulletList = ({ items }: { items: string[] }) => (
   <ul
     style={{
-      margin: 0,
-      paddingLeft: "18px",
-      listStyleType: "disc",
-      fontSize: "10.5px",
-      lineHeight: "1.55",
-      color: "#222",
-      fontFamily: "'Inter', Arial, Helvetica, sans-serif",
+      paddingLeft: "20px",
+      marginTop: "6px",
+      fontSize: "12px",
+      lineHeight: "1.65",
     }}
   >
     {items.map((item, i) => (
-      <li key={i} style={{ marginBottom: "2px" }}>
+      <li key={i} style={{ marginBottom: "8px" }}>
         {item}
       </li>
     ))}
   </ul>
 );
 
-const SkillRow = ({ label, value }: { label: string; value: string }) => {
-  if (!value.trim()) return null;
-  return (
-    <div
-      style={{
-        fontSize: "10.5px",
-        lineHeight: "1.55",
-        color: "#222",
-        marginBottom: "2px",
-        fontFamily: "'Inter', Arial, Helvetica, sans-serif",
-      }}
-    >
-      <strong>{label}:</strong> {value}
-    </div>
-  );
-};
-
-interface ResumePreviewProps {
+const ResumePreview = ({
+  data,
+  isPaid,
+  previewRef,
+}: {
   data: ResumeData;
   isPaid: boolean;
   previewRef: React.RefObject<HTMLDivElement>;
-}
-
-const ResumePreview = ({ data, isPaid, previewRef }: ResumePreviewProps) => {
+}) => {
   const experienceBullets = parseBullets(data.experience);
   const projectBullets = parseBullets(data.projects);
   const certBullets = parseBullets(data.certifications);
@@ -124,22 +103,18 @@ const ResumePreview = ({ data, isPaid, previewRef }: ResumePreviewProps) => {
   return (
     <div
       ref={previewRef}
-      className="relative"
       style={{
         background: "#fff",
         color: "#111",
-        fontFamily: "'Inter', Arial, Helvetica, sans-serif",
-        fontSize: "10.5px",
-        lineHeight: "1.55",
-        padding: "40px 42px",
-        maxWidth: "794px",
-        minHeight: "700px",
+        fontFamily: "'Inter', Arial, sans-serif",
+        maxWidth: "820px",
         margin: "0 auto",
+        padding: "48px",
         boxSizing: "border-box",
-        borderRadius: "4px",
-        boxShadow: "0 1px 8px rgba(0,0,0,0.08)",
+        borderRadius: "8px",
+        boxShadow: "0 4px 18px rgba(0,0,0,0.06)",
+        position: "relative",
       }}
-      onContextMenu={(e) => e.preventDefault()}
     >
       {/* Watermark overlay */}
       {!isPaid && (
@@ -151,23 +126,19 @@ const ResumePreview = ({ data, isPaid, previewRef }: ResumePreviewProps) => {
             alignItems: "center",
             justifyContent: "center",
             pointerEvents: "none",
-            zIndex: 10,
-            overflow: "hidden",
           }}
         >
           <span
             style={{
-              fontSize: "2.2rem",
+              fontSize: "3rem",
               fontWeight: 800,
-              color: "rgba(0,0,0,0.06)",
-              transform: "rotate(-35deg)",
-              whiteSpace: "nowrap",
-              letterSpacing: "0.12em",
+              color: "rgba(0,0,0,0.05)",
+              transform: "rotate(-30deg)",
+              letterSpacing: "0.2em",
               textTransform: "uppercase",
-              userSelect: "none",
             }}
           >
-            FreshersPro – Preview Only
+            FreshersPro Preview
           </span>
         </div>
       )}
@@ -176,16 +147,14 @@ const ResumePreview = ({ data, isPaid, previewRef }: ResumePreviewProps) => {
       <div style={{ textAlign: "center", marginBottom: "4px" }}>
         <h1
           style={{
-            fontSize: "22px",
+            fontSize: "28px",
             fontWeight: 800,
             margin: 0,
-            letterSpacing: "0.02em",
-            color: "#111",
+            letterSpacing: "0.04em",
             textTransform: "uppercase",
-            fontFamily: "'Inter', Arial, Helvetica, sans-serif",
           }}
         >
-          {data.fullName || "YOUR FULL NAME"}
+          {data.fullName || "Your Full Name"}
         </h1>
       </div>
 
@@ -194,10 +163,9 @@ const ResumePreview = ({ data, isPaid, previewRef }: ResumePreviewProps) => {
         <div
           style={{
             textAlign: "center",
-            fontSize: "10px",
-            color: "#444",
-            marginBottom: "16px",
-            fontFamily: "'Inter', Arial, Helvetica, sans-serif",
+            fontSize: "13px",
+            color: "#555",
+            marginBottom: "30px",
           }}
         >
           {contactParts.join("  |  ")}
@@ -224,24 +192,18 @@ const ResumePreview = ({ data, isPaid, previewRef }: ResumePreviewProps) => {
 
       {/* Education */}
       {(data.degree || data.college) && (
-        <div style={{ marginBottom: "14px" }}>
+        <>
           <SectionTitle>Education</SectionTitle>
-          <div
-            style={{
-              fontSize: "10.5px",
-              color: "#222",
-              fontFamily: "'Inter', Arial, Helvetica, sans-serif",
-            }}
-          >
+          <div style={{ fontSize: "12px", lineHeight: "1.7" }}>
             <strong>{data.degree}</strong>
             {data.college && <span> — {data.college}</span>}
             {data.year && (
-              <span style={{ color: "#555", marginLeft: "6px" }}>
+              <span style={{ color: "#666", marginLeft: "6px" }}>
                 ({data.year})
               </span>
             )}
           </div>
-        </div>
+        </>
       )}
 
       {/* Skills */}
@@ -258,26 +220,26 @@ const ResumePreview = ({ data, isPaid, previewRef }: ResumePreviewProps) => {
 
       {/* Experience */}
       {experienceBullets.length > 0 && (
-        <div style={{ marginBottom: "14px" }}>
+        <>
           <SectionTitle>Experience</SectionTitle>
           <BulletList items={experienceBullets} />
-        </div>
+        </>
       )}
 
       {/* Projects */}
       {projectBullets.length > 0 && (
-        <div style={{ marginBottom: "14px" }}>
+        <>
           <SectionTitle>Projects</SectionTitle>
           <BulletList items={projectBullets} />
-        </div>
+        </>
       )}
 
       {/* Certifications */}
       {certBullets.length > 0 && (
-        <div style={{ marginBottom: "14px" }}>
+        <>
           <SectionTitle>Certifications</SectionTitle>
           <BulletList items={certBullets} />
-        </div>
+        </>
       )}
     </div>
   );
