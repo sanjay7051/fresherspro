@@ -9,7 +9,9 @@ export interface ResumeData {
   college: string;
   year: string;
   programmingLanguages: string;
-  toolsTechnologies: string;
+  frameworksLibraries: string;
+  toolsPlatforms: string;
+  databases: string;
   softSkills: string;
   experience: string;
   projects: string;
@@ -26,7 +28,9 @@ export const emptyResume: ResumeData = {
   college: "",
   year: "",
   programmingLanguages: "",
-  toolsTechnologies: "",
+  frameworksLibraries: "",
+  toolsPlatforms: "",
+  databases: "",
   softSkills: "",
   experience: "",
   projects: "",
@@ -110,6 +114,13 @@ const ResumePreview = ({ data, isPaid, previewRef }: ResumePreviewProps) => {
 
   const contactParts = [data.email, data.phone, data.linkedin].filter(Boolean);
 
+  const hasSkills =
+    data.programmingLanguages ||
+    data.frameworksLibraries ||
+    data.toolsPlatforms ||
+    data.databases ||
+    data.softSkills;
+
   return (
     <div
       ref={previewRef}
@@ -130,7 +141,7 @@ const ResumePreview = ({ data, isPaid, previewRef }: ResumePreviewProps) => {
       }}
       onContextMenu={(e) => e.preventDefault()}
     >
-      {/* Watermark overlay — only shown when unpaid */}
+      {/* Watermark overlay */}
       {!isPaid && (
         <div
           style={{
@@ -161,7 +172,7 @@ const ResumePreview = ({ data, isPaid, previewRef }: ResumePreviewProps) => {
         </div>
       )}
 
-      {/* ── Name ── */}
+      {/* Name */}
       <div style={{ textAlign: "center", marginBottom: "4px" }}>
         <h1
           style={{
@@ -178,7 +189,7 @@ const ResumePreview = ({ data, isPaid, previewRef }: ResumePreviewProps) => {
         </h1>
       </div>
 
-      {/* ── Contact line ── */}
+      {/* Contact */}
       {contactParts.length > 0 && (
         <div
           style={{
@@ -193,10 +204,10 @@ const ResumePreview = ({ data, isPaid, previewRef }: ResumePreviewProps) => {
         </div>
       )}
 
-      {/* ── Career Objective ── */}
+      {/* Career Objective */}
       {data.careerObjective && (
         <div style={{ marginBottom: "14px" }}>
-          <SectionTitle>Career Objective</SectionTitle>
+          <SectionTitle>Professional Summary</SectionTitle>
           <p
             style={{
               margin: 0,
@@ -211,7 +222,7 @@ const ResumePreview = ({ data, isPaid, previewRef }: ResumePreviewProps) => {
         </div>
       )}
 
-      {/* ── Education ── */}
+      {/* Education */}
       {(data.degree || data.college) && (
         <div style={{ marginBottom: "14px" }}>
           <SectionTitle>Education</SectionTitle>
@@ -233,17 +244,19 @@ const ResumePreview = ({ data, isPaid, previewRef }: ResumePreviewProps) => {
         </div>
       )}
 
-      {/* ── Skills ── */}
-      {(data.programmingLanguages || data.toolsTechnologies || data.softSkills) && (
+      {/* Skills */}
+      {hasSkills && (
         <div style={{ marginBottom: "14px" }}>
-          <SectionTitle>Skills</SectionTitle>
+          <SectionTitle>Technical Skills</SectionTitle>
           <SkillRow label="Programming Languages" value={data.programmingLanguages} />
-          <SkillRow label="Tools & Technologies" value={data.toolsTechnologies} />
+          <SkillRow label="Frameworks & Libraries" value={data.frameworksLibraries} />
+          <SkillRow label="Tools & Platforms" value={data.toolsPlatforms} />
+          <SkillRow label="Databases" value={data.databases} />
           <SkillRow label="Soft Skills" value={data.softSkills} />
         </div>
       )}
 
-      {/* ── Experience ── */}
+      {/* Experience */}
       {experienceBullets.length > 0 && (
         <div style={{ marginBottom: "14px" }}>
           <SectionTitle>Experience</SectionTitle>
@@ -251,7 +264,7 @@ const ResumePreview = ({ data, isPaid, previewRef }: ResumePreviewProps) => {
         </div>
       )}
 
-      {/* ── Projects ── */}
+      {/* Projects */}
       {projectBullets.length > 0 && (
         <div style={{ marginBottom: "14px" }}>
           <SectionTitle>Projects</SectionTitle>
@@ -259,7 +272,7 @@ const ResumePreview = ({ data, isPaid, previewRef }: ResumePreviewProps) => {
         </div>
       )}
 
-      {/* ── Certifications ── */}
+      {/* Certifications */}
       {certBullets.length > 0 && (
         <div style={{ marginBottom: "14px" }}>
           <SectionTitle>Certifications</SectionTitle>

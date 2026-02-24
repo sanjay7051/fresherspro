@@ -2,3 +2,6 @@ project_id = "gmywsfpmyncapbhgehhg"
 
 [functions.verify-payment]
 verify_jwt = false
+
+[functions.enhance-resume]
+verify_jwt = false
