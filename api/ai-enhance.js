@@ -16,15 +16,30 @@ export default async function handler(req, res) {
                 },
                 body: JSON.stringify({
                     model: "llama3-8b-8192",
+                    temperature: 0.8,
                     messages: [
                         {
                             role: "system",
-                            content: "You are a professional resume writer. Return ONLY valid JSON."
+                            content: `
+You are an expert resume writer.
+
+Rules:
+- Always rewrite and improve the content.
+- Expand short inputs into professional bullet points.
+- If user says "Fresher", generate internship-style academic experience.
+- Use strong action verbs.
+- Make content ATS-friendly.
+- Return ONLY valid JSON.
+- Do not explain anything.
+- Do not wrap JSON in markdown.
+`
                         },
                         {
                             role: "user",
                             content: `
-Return improved resume in this exact JSON format:
+Rewrite and enhance this resume data professionally.
+
+Return output in EXACT JSON format:
 
 {
   "careerObjective": "",
@@ -40,10 +55,9 @@ Return improved resume in this exact JSON format:
 
 Resume data:
 ${JSON.stringify(content)}
-              `
+`
                         }
                     ],
-                    temperature: 0.7
                 }),
             }
         );
@@ -51,14 +65,24 @@ ${JSON.stringify(content)}
         const data = await response.json();
 
         const aiText =
-            data?.choices?.[0]?.message?.content || "{}";
+            data?.choices?.[0]?.message?.content?.trim() || "{}";
 
         let parsed;
+
         try {
             parsed = JSON.parse(aiText);
         } catch {
+            // fallback clean
             parsed = {
-                careerObjective: aiText
+                careerObjective: aiText,
+                experience: "",
+                projects: "",
+                programmingLanguages: "",
+                frameworksLibraries: "",
+                toolsPlatforms: "",
+                databases: "",
+                softSkills: "",
+                certifications: ""
             };
         }
 
