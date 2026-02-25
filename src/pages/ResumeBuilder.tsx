@@ -96,29 +96,47 @@ const ResumeBuilder = () => {
       .save();
   };
 
-  const handlePayAndDownload = async () => {
-    if (isPaid) {
-      handleDownloadPDF();
+  const handleGenerateResume = async () => {
+    const hasContent =
+      data.fullName ||
+      data.experience ||
+      data.projects ||
+      data.programmingLanguages ||
+      data.degree;
+
+    if (!hasContent) {
+      toast.error("Please fill in some details before generating.");
       return;
     }
 
-    setIsProcessing(true);
+    setIsGenerating(true);
 
     try {
-      const { data: result } = await supabase.functions.invoke(
-        "verify-payment",
-        { body: { mock: true } }
-      );
+      const response = await fetch("/api/ai-enhance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content: data }),
+      });
 
-      if (!result?.download_token) {
-        toast.error("Payment failed.");
-        return;
+      if (!response.ok) {
+        throw new Error("AI request failed");
       }
 
-      setDownloadToken(result.download_token);
-      handleDownloadPDF();
+      const enhanced = await response.json();
+
+      setData((prev) => ({
+        ...prev,
+        ...enhanced,
+      }));
+
+      toast.success("Resume enhanced successfully!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong.");
     } finally {
-      setIsProcessing(false);
+      setIsGenerating(false);
     }
   };
 
