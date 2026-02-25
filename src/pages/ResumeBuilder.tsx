@@ -1,13 +1,15 @@
 import { useState, useCallback, useRef } from "react";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Sparkles, Download, Loader2 } from "lucide-react";
+import { Sparkles, Download, Loader2 } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import html2pdf from "html2pdf.js";
-import ResumePreview, { type ResumeData, emptyResume } from "@/components/ResumePreview";
+import ResumePreview, {
+  type ResumeData,
+  emptyResume,
+} from "@/components/ResumePreview";
 
 const ResumeBuilder = () => {
   const [data, setData] = useState<ResumeData>(emptyResume);
@@ -51,14 +53,31 @@ const ResumeBuilder = () => {
 
       const enhanced = await response.json();
 
+      console.log("AI RESPONSE:", enhanced); // 🔍 Debug log
+
       setData((prev) => ({
         ...prev,
-        ...enhanced,
+        careerObjective:
+          enhanced.careerObjective || prev.careerObjective,
+        experience: enhanced.experience || prev.experience,
+        projects: enhanced.projects || prev.projects,
+        programmingLanguages:
+          enhanced.programmingLanguages ||
+          prev.programmingLanguages,
+        frameworksLibraries:
+          enhanced.frameworksLibraries ||
+          prev.frameworksLibraries,
+        toolsPlatforms:
+          enhanced.toolsPlatforms || prev.toolsPlatforms,
+        databases: enhanced.databases || prev.databases,
+        softSkills: enhanced.softSkills || prev.softSkills,
+        certifications:
+          enhanced.certifications || prev.certifications,
       }));
 
       toast.success("Resume enhanced successfully!");
     } catch (error) {
-      console.error(error);
+      console.error("AI ERROR:", error);
       toast.error("Something went wrong.");
     } finally {
       setIsGenerating(false);
@@ -74,7 +93,11 @@ const ResumeBuilder = () => {
         filename: `${data.fullName || "Resume"}_FreshersPro.pdf`,
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2 },
-        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+        jsPDF: {
+          unit: "in",
+          format: "a4",
+          orientation: "portrait",
+        },
       })
       .from(previewRef.current)
       .save();
@@ -93,17 +116,26 @@ const ResumeBuilder = () => {
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <Label>Full Name</Label>
-              <Input value={data.fullName} onChange={update("fullName")} />
+              <Input
+                value={data.fullName}
+                onChange={update("fullName")}
+              />
             </div>
             <div>
               <Label>Phone</Label>
-              <Input value={data.phone} onChange={update("phone")} />
+              <Input
+                value={data.phone}
+                onChange={update("phone")}
+              />
             </div>
           </div>
 
           <div>
             <Label>Email</Label>
-            <Input value={data.email} onChange={update("email")} />
+            <Input
+              value={data.email}
+              onChange={update("email")}
+            />
           </div>
 
           <div>
@@ -138,7 +170,10 @@ const ResumeBuilder = () => {
             />
           </div>
 
-          <Button onClick={handleGenerateResume} disabled={isGenerating}>
+          <Button
+            onClick={handleGenerateResume}
+            disabled={isGenerating}
+          >
             {isGenerating ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -155,7 +190,11 @@ const ResumeBuilder = () => {
 
         {/* PREVIEW */}
         <div>
-          <ResumePreview data={data} isPaid={true} previewRef={previewRef} />
+          <ResumePreview
+            data={data}
+            isPaid={true}
+            previewRef={previewRef}
+          />
 
           <Button
             onClick={handleDownloadPDF}
