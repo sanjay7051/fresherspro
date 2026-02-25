@@ -16,23 +16,30 @@ const ResumeBuilder = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
+  // 🔹 Controlled update with validation
   const update = useCallback(
     (field: keyof ResumeData) =>
-      (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-        setData((prev) => ({ ...prev, [field]: e.target.value })),
+      (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        let value = e.target.value;
+
+        // Full Name → Auto uppercase
+        if (field === "fullName") {
+          value = value.toUpperCase();
+        }
+
+        // Phone → Only 10 digits numeric
+        if (field === "phone") {
+          value = value.replace(/\D/g, "").slice(0, 10);
+        }
+
+        setData((prev) => ({ ...prev, [field]: value }));
+      },
     []
   );
 
   const handleGenerateResume = async () => {
-    const hasContent =
-      data.fullName ||
-      data.experience ||
-      data.projects ||
-      data.programmingLanguages ||
-      data.degree;
-
-    if (!hasContent) {
-      toast.error("Please fill in some details before generating.");
+    if (!data.fullName) {
+      toast.error("Full Name is required.");
       return;
     }
 
@@ -41,9 +48,7 @@ const ResumeBuilder = () => {
     try {
       const response = await fetch("/api/ai-enhance", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: data }),
       });
 
@@ -53,32 +58,18 @@ const ResumeBuilder = () => {
 
       const enhanced = await response.json();
 
-      console.log("AI RESPONSE:", enhanced); // 🔍 Debug log
-
+      // Only replace fields AI returned (safe merge)
       setData((prev) => ({
         ...prev,
-        careerObjective:
-          enhanced.careerObjective || prev.careerObjective,
-        experience: enhanced.experience || prev.experience,
-        projects: enhanced.projects || prev.projects,
-        programmingLanguages:
-          enhanced.programmingLanguages ||
-          prev.programmingLanguages,
-        frameworksLibraries:
-          enhanced.frameworksLibraries ||
-          prev.frameworksLibraries,
-        toolsPlatforms:
-          enhanced.toolsPlatforms || prev.toolsPlatforms,
-        databases: enhanced.databases || prev.databases,
-        softSkills: enhanced.softSkills || prev.softSkills,
-        certifications:
-          enhanced.certifications || prev.certifications,
+        ...Object.fromEntries(
+          Object.entries(enhanced).filter(([_, v]) => v)
+        ),
       }));
 
       toast.success("Resume enhanced successfully!");
     } catch (error) {
       console.error("AI ERROR:", error);
-      toast.error("Something went wrong.");
+      toast.error("AI enhancement failed.");
     } finally {
       setIsGenerating(false);
     }
@@ -93,11 +84,7 @@ const ResumeBuilder = () => {
         filename: `${data.fullName || "Resume"}_FreshersPro.pdf`,
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: { scale: 2 },
-        jsPDF: {
-          unit: "in",
-          format: "a4",
-          orientation: "portrait",
-        },
+        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
       })
       .from(previewRef.current)
       .save();
@@ -119,13 +106,17 @@ const ResumeBuilder = () => {
               <Input
                 value={data.fullName}
                 onChange={update("fullName")}
+                placeholder="ENTER YOUR FULL NAME"
               />
             </div>
+
             <div>
-              <Label>Phone</Label>
+              <Label>Phone (10 digits)</Label>
               <Input
                 value={data.phone}
                 onChange={update("phone")}
+                placeholder="9876543210"
+                maxLength={10}
               />
             </div>
           </div>
@@ -133,8 +124,28 @@ const ResumeBuilder = () => {
           <div>
             <Label>Email</Label>
             <Input
+              type="email"
               value={data.email}
               onChange={update("email")}
+              placeholder="example@gmail.com"
+            />
+          </div>
+
+          <div>
+            <Label>LinkedIn</Label>
+            <Input
+              value={data.linkedin}
+              onChange={update("linkedin")}
+              placeholder="linkedin.com/in/yourprofile"
+            />
+          </div>
+
+          <div>
+            <Label>GitHub</Label>
+            <Input
+              value={data.github || ""}
+              onChange={update("github")}
+              placeholder="github.com/yourusername"
             />
           </div>
 
@@ -147,7 +158,7 @@ const ResumeBuilder = () => {
           </div>
 
           <div>
-            <Label>Experience</Label>
+            <Label>Experience (Separate by new line)</Label>
             <Textarea
               value={data.experience}
               onChange={update("experience")}
@@ -155,7 +166,7 @@ const ResumeBuilder = () => {
           </div>
 
           <div>
-            <Label>Projects</Label>
+            <Label>Projects (Separate by new line)</Label>
             <Textarea
               value={data.projects}
               onChange={update("projects")}
@@ -167,13 +178,11 @@ const ResumeBuilder = () => {
             <Input
               value={data.programmingLanguages}
               onChange={update("programmingLanguages")}
+              placeholder="Python, Java, C++"
             />
           </div>
 
-          <Button
-            onClick={handleGenerateResume}
-            disabled={isGenerating}
-          >
+          <Button onClick={handleGenerateResume} disabled={isGenerating}>
             {isGenerating ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -196,15 +205,11 @@ const ResumeBuilder = () => {
             previewRef={previewRef}
           />
 
-          <Button
-            onClick={handleDownloadPDF}
-            className="mt-4 w-full"
-          >
+          <Button onClick={handleDownloadPDF} className="mt-4 w-full">
             <Download className="h-4 w-4 mr-2" />
             Download PDF
           </Button>
         </div>
-
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ export interface ResumeData {
   phone: string;
   email: string;
   linkedin: string;
+  github?: string;
   degree: string;
   college: string;
   year: string;
@@ -24,6 +25,7 @@ export const emptyResume: ResumeData = {
   phone: "",
   email: "",
   linkedin: "",
+  github: "",
   degree: "",
   college: "",
   year: "",
@@ -49,10 +51,12 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
     style={{
       fontSize: "15px",
       fontWeight: 700,
+      textTransform: "uppercase",
       borderBottom: "1px solid #000",
-      paddingBottom: "4px",
-      marginTop: "24px",
-      marginBottom: "10px",
+      paddingBottom: "5px",
+      marginTop: "28px",
+      marginBottom: "12px",
+      letterSpacing: "1px",
     }}
   >
     {children}
@@ -72,32 +76,23 @@ const ResumePreview = ({
   const projectBullets = parseBullets(data.projects);
   const certBullets = parseBullets(data.certifications);
 
-  const contactParts = [data.email, data.phone, data.linkedin].filter(Boolean);
-
-  const hasSkills =
-    data.programmingLanguages ||
-    data.frameworksLibraries ||
-    data.toolsPlatforms ||
-    data.databases ||
-    data.softSkills;
-
   return (
     <div
       ref={previewRef}
       style={{
-        background: "#ffffff",
+        background: "#fff",
         color: "#000",
         fontFamily: "Times New Roman, serif",
-        fontSize: "14px",
-        lineHeight: "1.6",
         width: "794px",
         minHeight: "1123px",
         margin: "0 auto",
-        padding: "50px",
+        padding: "60px",
         boxSizing: "border-box",
+        lineHeight: "1.6",
         position: "relative",
       }}
     >
+      {/* Watermark */}
       {!isPaid && (
         <div
           style={{
@@ -113,7 +108,7 @@ const ResumePreview = ({
             style={{
               fontSize: "40px",
               fontWeight: 700,
-              color: "rgba(0,0,0,0.06)",
+              color: "rgba(0,0,0,0.05)",
               transform: "rotate(-30deg)",
               letterSpacing: "4px",
             }}
@@ -123,27 +118,35 @@ const ResumePreview = ({
         </div>
       )}
 
-      {/* Name */}
+      {/* NAME */}
       <div style={{ textAlign: "center", marginBottom: "10px" }}>
         <h1
           style={{
-            fontSize: "24px",
+            fontSize: "26px",
             fontWeight: 700,
             margin: 0,
+            letterSpacing: "1px",
           }}
         >
-          {data.fullName || "Your Name"}
+          {(data.fullName || "YOUR NAME").toUpperCase()}
         </h1>
       </div>
 
-      {/* Contact */}
-      {contactParts.length > 0 && (
-        <div style={{ textAlign: "center", marginBottom: "20px" }}>
-          {contactParts.join(" | ")}
-        </div>
-      )}
+      {/* CONTACT */}
+      <div
+        style={{
+          textAlign: "center",
+          fontSize: "14px",
+          marginBottom: "20px",
+        }}
+      >
+        {data.phone && <span>{data.phone}</span>}
+        {data.email && <span> | {data.email}</span>}
+        {data.linkedin && <span> | {data.linkedin}</span>}
+        {data.github && <span> | {data.github}</span>}
+      </div>
 
-      {/* Professional Summary */}
+      {/* PROFESSIONAL SUMMARY */}
       {data.careerObjective && (
         <>
           <SectionTitle>Professional Summary</SectionTitle>
@@ -151,7 +154,79 @@ const ResumePreview = ({
         </>
       )}
 
-      {/* Education */}
+      {/* EXPERIENCE (After Summary as requested) */}
+      {experienceBullets.length > 0 && (
+        <>
+          <SectionTitle>Experience</SectionTitle>
+          <ul style={{ paddingLeft: "20px" }}>
+            {experienceBullets.map((item, i) => (
+              <li key={i} style={{ marginBottom: "8px" }}>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {/* PROJECTS */}
+      {projectBullets.length > 0 && (
+        <>
+          <SectionTitle>Projects</SectionTitle>
+          <ul style={{ paddingLeft: "20px" }}>
+            {projectBullets.map((item, i) => (
+              <li key={i} style={{ marginBottom: "8px" }}>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {/* TECHNICAL SKILLS */}
+      {(data.programmingLanguages ||
+        data.frameworksLibraries ||
+        data.toolsPlatforms ||
+        data.databases ||
+        data.softSkills) && (
+          <>
+            <SectionTitle>Technical Skills</SectionTitle>
+
+            {data.programmingLanguages && (
+              <div>
+                <strong>Programming Languages:</strong>{" "}
+                {data.programmingLanguages}
+              </div>
+            )}
+
+            {data.frameworksLibraries && (
+              <div>
+                <strong>Frameworks & Libraries:</strong>{" "}
+                {data.frameworksLibraries}
+              </div>
+            )}
+
+            {data.toolsPlatforms && (
+              <div>
+                <strong>Tools & Platforms:</strong>{" "}
+                {data.toolsPlatforms}
+              </div>
+            )}
+
+            {data.databases && (
+              <div>
+                <strong>Databases:</strong> {data.databases}
+              </div>
+            )}
+
+            {data.softSkills && (
+              <div>
+                <strong>Soft Skills:</strong> {data.softSkills}
+              </div>
+            )}
+          </>
+        )}
+
+      {/* EDUCATION */}
       {(data.degree || data.college) && (
         <>
           <SectionTitle>Education</SectionTitle>
@@ -163,61 +238,11 @@ const ResumePreview = ({
         </>
       )}
 
-      {/* Skills */}
-      {hasSkills && (
-        <>
-          <SectionTitle>Technical Skills</SectionTitle>
-          {data.programmingLanguages && (
-            <div><strong>Programming Languages:</strong> {data.programmingLanguages}</div>
-          )}
-          {data.frameworksLibraries && (
-            <div><strong>Frameworks & Libraries:</strong> {data.frameworksLibraries}</div>
-          )}
-          {data.toolsPlatforms && (
-            <div><strong>Tools & Platforms:</strong> {data.toolsPlatforms}</div>
-          )}
-          {data.databases && (
-            <div><strong>Databases:</strong> {data.databases}</div>
-          )}
-          {data.softSkills && (
-            <div><strong>Soft Skills:</strong> {data.softSkills}</div>
-          )}
-        </>
-      )}
-
-      {/* Experience */}
-      {experienceBullets.length > 0 && (
-        <>
-          <SectionTitle>Experience</SectionTitle>
-          <ul style={{ paddingLeft: "20px", marginTop: "6px" }}>
-            {experienceBullets.map((item, i) => (
-              <li key={i} style={{ marginBottom: "6px" }}>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-
-      {/* Projects */}
-      {projectBullets.length > 0 && (
-        <>
-          <SectionTitle>Projects</SectionTitle>
-          <ul style={{ paddingLeft: "20px", marginTop: "6px" }}>
-            {projectBullets.map((item, i) => (
-              <li key={i} style={{ marginBottom: "6px" }}>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-
-      {/* Certifications */}
+      {/* CERTIFICATIONS */}
       {certBullets.length > 0 && (
         <>
           <SectionTitle>Certifications</SectionTitle>
-          <ul style={{ paddingLeft: "20px", marginTop: "6px" }}>
+          <ul style={{ paddingLeft: "20px" }}>
             {certBullets.map((item, i) => (
               <li key={i} style={{ marginBottom: "6px" }}>
                 {item}
