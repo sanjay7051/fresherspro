@@ -61,6 +61,15 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
   </h2>
 );
 
+const SkillRow = ({ label, value }: { label: string; value: string }) => {
+  if (!value) return null;
+  return (
+    <div style={{ fontSize: "12px", lineHeight: "1.7", marginBottom: "4px" }}>
+      <strong>{label}:</strong> <span style={{ color: "#333" }}>{value}</span>
+    </div>
+  );
+};
+
 const BulletList = ({ items }: { items: string[] }) => (
   <ul
     style={{
