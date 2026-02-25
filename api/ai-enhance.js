@@ -29,7 +29,6 @@ Expand weak points.
 Make it professional and impact-focused.
 Use strong action verbs.
 Quantify results when possible.
-Format "experience" and "projects" as bullet points separated by newline.
 
 Return ONLY valid JSON.
 Do NOT include explanations.
