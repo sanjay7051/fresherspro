@@ -47,44 +47,16 @@ const parseBullets = (text: string): string[] =>
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
   <h2
     style={{
-      fontSize: "13px",
+      fontSize: "15px",
       fontWeight: 700,
-      textTransform: "uppercase",
-      letterSpacing: "0.15em",
-      borderBottom: "1px solid #222",
-      paddingBottom: "6px",
-      marginBottom: "12px",
-      marginTop: "28px",
+      borderBottom: "1px solid #000",
+      paddingBottom: "4px",
+      marginTop: "24px",
+      marginBottom: "10px",
     }}
   >
     {children}
   </h2>
-);
-
-const SkillRow = ({ label, value }: { label: string; value: string }) => {
-  if (!value) return null;
-  return (
-    <div style={{ fontSize: "12px", lineHeight: "1.7", marginBottom: "4px" }}>
-      <strong>{label}:</strong> <span style={{ color: "#333" }}>{value}</span>
-    </div>
-  );
-};
-
-const BulletList = ({ items }: { items: string[] }) => (
-  <ul
-    style={{
-      paddingLeft: "20px",
-      marginTop: "6px",
-      fontSize: "12px",
-      lineHeight: "1.65",
-    }}
-  >
-    {items.map((item, i) => (
-      <li key={i} style={{ marginBottom: "8px" }}>
-        {item}
-      </li>
-    ))}
-  </ul>
 );
 
 const ResumePreview = ({
@@ -113,19 +85,19 @@ const ResumePreview = ({
     <div
       ref={previewRef}
       style={{
-        background: "#fff",
-        color: "#111",
-        fontFamily: "'Inter', Arial, sans-serif",
-        maxWidth: "820px",
+        background: "#ffffff",
+        color: "#000",
+        fontFamily: "Times New Roman, serif",
+        fontSize: "14px",
+        lineHeight: "1.6",
+        width: "794px",
+        minHeight: "1123px",
         margin: "0 auto",
-        padding: "48px",
+        padding: "50px",
         boxSizing: "border-box",
-        borderRadius: "8px",
-        boxShadow: "0 4px 18px rgba(0,0,0,0.06)",
         position: "relative",
       }}
     >
-      {/* Watermark overlay */}
       {!isPaid && (
         <div
           style={{
@@ -139,99 +111,91 @@ const ResumePreview = ({
         >
           <span
             style={{
-              fontSize: "3rem",
-              fontWeight: 800,
-              color: "rgba(0,0,0,0.05)",
+              fontSize: "40px",
+              fontWeight: 700,
+              color: "rgba(0,0,0,0.06)",
               transform: "rotate(-30deg)",
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
+              letterSpacing: "4px",
             }}
           >
-            FreshersPro Preview
+            FRESHERSPRO PREVIEW
           </span>
         </div>
       )}
 
       {/* Name */}
-      <div style={{ textAlign: "center", marginBottom: "4px" }}>
+      <div style={{ textAlign: "center", marginBottom: "10px" }}>
         <h1
           style={{
-            fontSize: "28px",
-            fontWeight: 800,
+            fontSize: "24px",
+            fontWeight: 700,
             margin: 0,
-            letterSpacing: "0.04em",
-            textTransform: "uppercase",
           }}
         >
-          {data.fullName || "Your Full Name"}
+          {data.fullName || "Your Name"}
         </h1>
       </div>
 
       {/* Contact */}
       {contactParts.length > 0 && (
-        <div
-          style={{
-            textAlign: "center",
-            fontSize: "13px",
-            color: "#555",
-            marginBottom: "30px",
-          }}
-        >
-          {contactParts.join("  |  ")}
+        <div style={{ textAlign: "center", marginBottom: "20px" }}>
+          {contactParts.join(" | ")}
         </div>
       )}
 
-      {/* Career Objective */}
+      {/* Professional Summary */}
       {data.careerObjective && (
-        <div style={{ marginBottom: "14px" }}>
+        <>
           <SectionTitle>Professional Summary</SectionTitle>
-          <p
-            style={{
-              margin: 0,
-              fontSize: "10.5px",
-              color: "#222",
-              lineHeight: "1.6",
-              fontFamily: "'Inter', Arial, Helvetica, sans-serif",
-            }}
-          >
-            {data.careerObjective}
-          </p>
-        </div>
+          <p style={{ margin: 0 }}>{data.careerObjective}</p>
+        </>
       )}
 
       {/* Education */}
       {(data.degree || data.college) && (
         <>
           <SectionTitle>Education</SectionTitle>
-          <div style={{ fontSize: "12px", lineHeight: "1.7" }}>
+          <div>
             <strong>{data.degree}</strong>
-            {data.college && <span> — {data.college}</span>}
-            {data.year && (
-              <span style={{ color: "#666", marginLeft: "6px" }}>
-                ({data.year})
-              </span>
-            )}
+            {data.college && <> — {data.college}</>}
+            {data.year && <> ({data.year})</>}
           </div>
         </>
       )}
 
       {/* Skills */}
       {hasSkills && (
-        <div style={{ marginBottom: "14px" }}>
+        <>
           <SectionTitle>Technical Skills</SectionTitle>
-          <SkillRow label="Programming Languages" value={data.programmingLanguages} />
-          <SkillRow label="Frameworks & Libraries" value={data.frameworksLibraries} />
-          <SkillRow label="Tools & Platforms" value={data.toolsPlatforms} />
-          <SkillRow label="Databases" value={data.databases} />
-          <SkillRow label="Soft Skills" value={data.softSkills} />
-        </div>
+          {data.programmingLanguages && (
+            <div><strong>Programming Languages:</strong> {data.programmingLanguages}</div>
+          )}
+          {data.frameworksLibraries && (
+            <div><strong>Frameworks & Libraries:</strong> {data.frameworksLibraries}</div>
+          )}
+          {data.toolsPlatforms && (
+            <div><strong>Tools & Platforms:</strong> {data.toolsPlatforms}</div>
+          )}
+          {data.databases && (
+            <div><strong>Databases:</strong> {data.databases}</div>
+          )}
+          {data.softSkills && (
+            <div><strong>Soft Skills:</strong> {data.softSkills}</div>
+          )}
+        </>
       )}
 
       {/* Experience */}
       {experienceBullets.length > 0 && (
         <>
           <SectionTitle>Experience</SectionTitle>
-          <BulletList items={experienceBullets} />
+          <ul style={{ paddingLeft: "20px", marginTop: "6px" }}>
+            {experienceBullets.map((item, i) => (
+              <li key={i} style={{ marginBottom: "6px" }}>
+                {item}
+              </li>
+            ))}
+          </ul>
         </>
       )}
 
@@ -239,7 +203,13 @@ const ResumePreview = ({
       {projectBullets.length > 0 && (
         <>
           <SectionTitle>Projects</SectionTitle>
-          <BulletList items={projectBullets} />
+          <ul style={{ paddingLeft: "20px", marginTop: "6px" }}>
+            {projectBullets.map((item, i) => (
+              <li key={i} style={{ marginBottom: "6px" }}>
+                {item}
+              </li>
+            ))}
+          </ul>
         </>
       )}
 
@@ -247,7 +217,13 @@ const ResumePreview = ({
       {certBullets.length > 0 && (
         <>
           <SectionTitle>Certifications</SectionTitle>
-          <BulletList items={certBullets} />
+          <ul style={{ paddingLeft: "20px", marginTop: "6px" }}>
+            {certBullets.map((item, i) => (
+              <li key={i} style={{ marginBottom: "6px" }}>
+                {item}
+              </li>
+            ))}
+          </ul>
         </>
       )}
     </div>
