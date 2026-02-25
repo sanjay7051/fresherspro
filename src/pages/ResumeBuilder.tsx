@@ -106,8 +106,8 @@ const ResumeBuilder = () => {
     </div>
   );
 
-  const inputClass = "h-12 rounded-lg border-border/70 bg-background shadow-none text-foreground px-4 focus-visible:ring-1 focus-visible:ring-primary/40 focus-visible:ring-offset-0 transition-colors placeholder:text-muted-foreground/40";
-  const textareaClass = "min-h-[140px] rounded-lg border-border/70 bg-background shadow-none text-foreground px-4 py-3 focus-visible:ring-1 focus-visible:ring-primary/40 focus-visible:ring-offset-0 transition-colors placeholder:text-muted-foreground/40";
+  const inputClass = "h-12 rounded-lg border-border bg-white shadow-none text-foreground px-4 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/60 focus-visible:ring-offset-0 transition-colors placeholder:text-muted-foreground/50";
+  const textareaClass = "min-h-[180px] rounded-lg border-border bg-white shadow-none text-foreground px-4 py-4 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/60 focus-visible:ring-offset-0 transition-colors placeholder:text-muted-foreground/50";
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "hsl(210 20% 98%)" }}>
@@ -248,12 +248,12 @@ const ResumeBuilder = () => {
         {/* PREVIEW */}
         <div className="space-y-4">
           <div className="sticky top-6">
-            <div className="rounded-xl border border-border/80 bg-card shadow-[0_1px_3px_0_rgb(0_0_0/0.04)] overflow-hidden">
+            <div className="rounded-xl border border-border/80 bg-card shadow-[0_1px_3px_0_rgb(0_0_0/0.04)] overflow-hidden max-w-[650px] mx-auto">
               <div className="px-5 py-3 border-b border-border/60 bg-muted/20">
                 <h3 className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground/80">Live Preview</h3>
               </div>
               <div className="overflow-visible">
-                <div className="transform origin-top scale-[0.82] w-[122%]">
+                <div className="transform origin-top scale-[0.78] w-[128%] mx-auto">
                   <ResumePreview
                     data={data}
                     isPaid={true}
@@ -265,12 +265,11 @@ const ResumeBuilder = () => {
 
             <Button
               onClick={handleDownloadPDF}
-              variant="outline"
               size="lg"
-              className="mt-4 w-full rounded-lg shadow-sm font-medium"
+              className="mt-5 w-full max-w-[650px] mx-auto rounded-lg font-semibold h-13 px-8 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-lg transition-all"
             >
               <Download className="h-4 w-4 mr-2" />
-              Download PDF
+              Download PDF – ₹49
             </Button>
           </div>
         </div>
