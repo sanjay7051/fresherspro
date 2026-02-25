@@ -92,123 +92,185 @@ const ResumeBuilder = () => {
     toast.success("Resume downloaded successfully!");
   };
 
+  const SectionCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
+    <div className="rounded-xl border border-border bg-card shadow-sm p-5 space-y-4">
+      <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{title}</h3>
+      {children}
+    </div>
+  );
+
+  const FieldWrapper = ({ label, children }: { label: string; children: React.ReactNode }) => (
+    <div className="space-y-1.5">
+      <Label className="text-sm font-medium text-foreground/80">{label}</Label>
+      {children}
+    </div>
+  );
+
+  const inputClass = "h-11 rounded-lg border-border/60 bg-background shadow-none focus-visible:ring-1 focus-visible:ring-primary/40 focus-visible:ring-offset-0 transition-colors placeholder:text-muted-foreground/50";
+  const textareaClass = "min-h-[100px] rounded-lg border-border/60 bg-background shadow-none focus-visible:ring-1 focus-visible:ring-primary/40 focus-visible:ring-offset-0 transition-colors placeholder:text-muted-foreground/50";
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-6 grid lg:grid-cols-2 gap-8">
+    <div className="min-h-screen" style={{ backgroundColor: "hsl(210 20% 98%)" }}>
+      <div className="container mx-auto px-4 py-8 lg:py-10 grid lg:grid-cols-2 gap-10 max-w-7xl">
 
         {/* FORM */}
-        <div className="space-y-5">
-          <h2 className="text-xl font-bold">Your Details</h2>
+        <div className="space-y-6">
+          <div className="mb-2">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">Resume Builder</h1>
+            <p className="text-sm text-muted-foreground mt-1">Fill in your details to generate a professional resume</p>
+          </div>
 
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <Label>Full Name</Label>
-              <Input
-                value={data.fullName}
-                onChange={update("fullName")}
-                placeholder="ENTER YOUR FULL NAME"
-              />
+          {/* Personal Details */}
+          <SectionCard title="Personal Details">
+            <div className="grid sm:grid-cols-2 gap-4">
+              <FieldWrapper label="Full Name">
+                <Input
+                  value={data.fullName}
+                  onChange={update("fullName")}
+                  placeholder="ENTER YOUR FULL NAME"
+                  className={inputClass}
+                />
+              </FieldWrapper>
+
+              <FieldWrapper label="Phone (10 digits)">
+                <Input
+                  value={data.phone}
+                  onChange={update("phone")}
+                  placeholder="9876543210"
+                  maxLength={10}
+                  className={inputClass}
+                />
+              </FieldWrapper>
             </div>
 
-            <div>
-              <Label>Phone (10 digits)</Label>
+            <FieldWrapper label="Email">
               <Input
-                value={data.phone}
-                onChange={update("phone")}
-                placeholder="9876543210"
-                maxLength={10}
+                type="email"
+                value={data.email}
+                onChange={update("email")}
+                placeholder="example@gmail.com"
+                className={inputClass}
               />
+            </FieldWrapper>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <FieldWrapper label="LinkedIn">
+                <Input
+                  value={data.linkedin}
+                  onChange={update("linkedin")}
+                  placeholder="linkedin.com/in/yourprofile"
+                  className={inputClass}
+                />
+              </FieldWrapper>
+
+              <FieldWrapper label="GitHub">
+                <Input
+                  value={data.github || ""}
+                  onChange={update("github")}
+                  placeholder="github.com/yourusername"
+                  className={inputClass}
+                />
+              </FieldWrapper>
             </div>
-          </div>
+          </SectionCard>
 
-          <div>
-            <Label>Email</Label>
-            <Input
-              type="email"
-              value={data.email}
-              onChange={update("email")}
-              placeholder="example@gmail.com"
-            />
-          </div>
+          {/* Professional Summary */}
+          <SectionCard title="Professional Summary">
+            <FieldWrapper label="Career Objective / Summary">
+              <Textarea
+                value={data.careerObjective}
+                onChange={update("careerObjective")}
+                placeholder="Write a brief professional summary..."
+                className={textareaClass}
+              />
+            </FieldWrapper>
+          </SectionCard>
 
-          <div>
-            <Label>LinkedIn</Label>
-            <Input
-              value={data.linkedin}
-              onChange={update("linkedin")}
-              placeholder="linkedin.com/in/yourprofile"
-            />
-          </div>
+          {/* Experience */}
+          <SectionCard title="Experience">
+            <FieldWrapper label="Work Experience (one entry per line)">
+              <Textarea
+                value={data.experience}
+                onChange={update("experience")}
+                placeholder="Developed REST APIs using Node.js&#10;Automated CI/CD pipeline with GitHub Actions"
+                className={textareaClass}
+              />
+            </FieldWrapper>
+          </SectionCard>
 
-          <div>
-            <Label>GitHub</Label>
-            <Input
-              value={data.github || ""}
-              onChange={update("github")}
-              placeholder="github.com/yourusername"
-            />
-          </div>
+          {/* Projects */}
+          <SectionCard title="Projects">
+            <FieldWrapper label="Projects (one entry per line)">
+              <Textarea
+                value={data.projects}
+                onChange={update("projects")}
+                placeholder="E-Commerce App — Built with React and Firebase&#10;Portfolio Website — Designed responsive layout with Tailwind"
+                className={textareaClass}
+              />
+            </FieldWrapper>
+          </SectionCard>
 
-          <div>
-            <Label>Professional Summary</Label>
-            <Textarea
-              value={data.careerObjective}
-              onChange={update("careerObjective")}
-            />
-          </div>
+          {/* Skills */}
+          <SectionCard title="Skills">
+            <FieldWrapper label="Programming Languages">
+              <Input
+                value={data.programmingLanguages}
+                onChange={update("programmingLanguages")}
+                placeholder="Python, Java, C++"
+                className={inputClass}
+              />
+            </FieldWrapper>
+          </SectionCard>
 
-          <div>
-            <Label>Experience (Separate by new line)</Label>
-            <Textarea
-              value={data.experience}
-              onChange={update("experience")}
-            />
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <Button
+              onClick={handleGenerateResume}
+              disabled={isGenerating}
+              size="lg"
+              className="rounded-lg shadow-sm font-medium"
+            >
+              {isGenerating ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Enhancing...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  AI Enhance Resume
+                </>
+              )}
+            </Button>
           </div>
-
-          <div>
-            <Label>Projects (Separate by new line)</Label>
-            <Textarea
-              value={data.projects}
-              onChange={update("projects")}
-            />
-          </div>
-
-          <div>
-            <Label>Programming Languages</Label>
-            <Input
-              value={data.programmingLanguages}
-              onChange={update("programmingLanguages")}
-              placeholder="Python, Java, C++"
-            />
-          </div>
-
-          <Button onClick={handleGenerateResume} disabled={isGenerating}>
-            {isGenerating ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                Enhancing...
-              </>
-            ) : (
-              <>
-                <Sparkles className="h-4 w-4 mr-2" />
-                AI Enhance Resume
-              </>
-            )}
-          </Button>
         </div>
 
         {/* PREVIEW */}
-        <div>
-          <ResumePreview
-            data={data}
-            isPaid={true}
-            previewRef={previewRef}
-          />
+        <div className="space-y-4">
+          <div className="sticky top-6">
+            <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+              <div className="px-5 py-3 border-b border-border bg-muted/30">
+                <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Live Preview</h3>
+              </div>
+              <div className="overflow-auto max-h-[80vh]">
+                <ResumePreview
+                  data={data}
+                  isPaid={true}
+                  previewRef={previewRef}
+                />
+              </div>
+            </div>
 
-          <Button onClick={handleDownloadPDF} className="mt-4 w-full">
-            <Download className="h-4 w-4 mr-2" />
-            Download PDF
-          </Button>
+            <Button
+              onClick={handleDownloadPDF}
+              variant="outline"
+              size="lg"
+              className="mt-4 w-full rounded-lg shadow-sm font-medium"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Download PDF
+            </Button>
+          </div>
         </div>
       </div>
     </div>
