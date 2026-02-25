@@ -24,14 +24,14 @@ export default async function handler(req, res) {
 You are a professional ATS resume writer.
 
 You MUST rewrite and improve the resume content.
-Do NOT copy input text.
+Do NOT copy the input text.
 Expand weak points.
 Make it professional and impact-focused.
-Use action verbs.
-Quantify results if possible.
+Use strong action verbs.
+Quantify results when possible.
 
 Return ONLY valid JSON.
-Do not include explanations.
+Do NOT include explanations.
 `
                         },
                         {
@@ -39,15 +39,7 @@ Do not include explanations.
                             content: `
 Rewrite and professionally enhance this resume.
 
-Rules:
-- Improve grammar.
-- Make bullet points stronger.
-- Expand very short entries.
-- Add measurable impact when possible.
-- Keep it realistic for a fresher.
-- If a section is empty, generate a strong professional version.
-
-Return ONLY this JSON structure:
+Return ONLY this exact JSON structure:
 
 {
   "careerObjective": "",
@@ -65,38 +57,68 @@ Resume Data:
 ${JSON.stringify(content)}
 `
                         }
-                    ],
+                    ]
                 }),
             }
         );
 
         const data = await response.json();
 
-        const aiText =
-            data?.choices?.[0]?.message?.content?.trim() || "{}";
+        // 🔎 Check if Groq returned error
+        if (!response.ok) {
+            console.error("Groq API Error:", data);
+            return res.status(500).json({
+                error: "Groq API failed",
+                details: data,
+            });
+        }
+
+        let aiText = data?.choices?.[0]?.message?.content;
+
+        if (!aiText) {
+            console.error("Empty AI response:", data);
+            return res.status(500).json({
+                error: "AI returned empty response",
+                raw: data,
+            });
+        }
+
+        // 🧹 Remove markdown wrapping if present
+        aiText = aiText
+            .replace(/```json/gi, "")
+            .replace(/```/g, "")
+            .trim();
+
+        // 🧠 Extract JSON block safely
+        const firstBrace = aiText.indexOf("{");
+        const lastBrace = aiText.lastIndexOf("}");
+
+        if (firstBrace === -1 || lastBrace === -1) {
+            console.error("No JSON found in AI output:", aiText);
+            return res.status(500).json({
+                error: "AI did not return valid JSON",
+                rawOutput: aiText,
+            });
+        }
+
+        const jsonString = aiText.substring(firstBrace, lastBrace + 1);
 
         let parsed;
 
         try {
-            parsed = JSON.parse(aiText);
-        } catch {
-            // fallback clean
-            parsed = {
-                careerObjective: aiText,
-                experience: "",
-                projects: "",
-                programmingLanguages: "",
-                frameworksLibraries: "",
-                toolsPlatforms: "",
-                databases: "",
-                softSkills: "",
-                certifications: ""
-            };
+            parsed = JSON.parse(jsonString);
+        } catch (err) {
+            console.error("JSON Parse Error:", err);
+            return res.status(500).json({
+                error: "Failed to parse AI JSON",
+                rawOutput: aiText,
+            });
         }
 
         return res.status(200).json(parsed);
 
     } catch (err) {
+        console.error("Server Error:", err);
         return res.status(500).json({ error: err.message });
     }
 }
