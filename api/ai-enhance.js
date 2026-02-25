@@ -21,25 +21,33 @@ export default async function handler(req, res) {
                         {
                             role: "system",
                             content: `
-You are an expert resume writer.
+You are a professional ATS resume writer.
 
-Rules:
-- Always rewrite and improve the content.
-- Expand short inputs into professional bullet points.
-- If user says "Fresher", generate internship-style academic experience.
-- Use strong action verbs.
-- Make content ATS-friendly.
-- Return ONLY valid JSON.
-- Do not explain anything.
-- Do not wrap JSON in markdown.
+You MUST rewrite and improve the resume content.
+Do NOT copy input text.
+Expand weak points.
+Make it professional and impact-focused.
+Use action verbs.
+Quantify results if possible.
+
+Return ONLY valid JSON.
+Do not include explanations.
 `
                         },
                         {
                             role: "user",
                             content: `
-Rewrite and enhance this resume data professionally.
+Rewrite and professionally enhance this resume.
 
-Return output in EXACT JSON format:
+Rules:
+- Improve grammar.
+- Make bullet points stronger.
+- Expand very short entries.
+- Add measurable impact when possible.
+- Keep it realistic for a fresher.
+- If a section is empty, generate a strong professional version.
+
+Return ONLY this JSON structure:
 
 {
   "careerObjective": "",
@@ -53,7 +61,7 @@ Return output in EXACT JSON format:
   "certifications": ""
 }
 
-Resume data:
+Resume Data:
 ${JSON.stringify(content)}
 `
                         }
