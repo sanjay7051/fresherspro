@@ -15,33 +15,28 @@ export default async function handler(req, res) {
                     Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
                 },
                 body: JSON.stringify({
-                    model: "llama-3.3-70b-versatile",
+                    model: "llama-3.1-8b-instant",
                     temperature: 0.7,
+                    response_format: { type: "json_object" }, // 🔥 IMPORTANT
                     messages: [
                         {
                             role: "system",
-                            content: `
-You are a professional ATS resume writer.
-
-STRICT RULES:
-- Rewrite and improve content.
-- DO NOT copy original text.
-- Make it professional and impact-driven.
-- Use strong action verbs.
-- Keep skills concise (NO paragraphs).
-- Experience and Projects MUST be bullet points separated by newline.
-- Certifications must be short and clean (only title + provider).
-- Keep content realistic for a fresher.
-- Do NOT return explanations.
-- Return ONLY valid JSON.
-`
+                            content:
+                                "You are a professional ATS resume writer. Return only valid JSON.",
                         },
                         {
                             role: "user",
                             content: `
-Enhance the following resume data.
+Enhance the resume professionally.
 
-Return ONLY this exact JSON structure:
+Rules:
+- Rewrite content.
+- Use strong action verbs.
+- Bullet points separated by newline.
+- Skills must be comma separated.
+- Keep realistic for fresher.
+
+Return this JSON:
 
 {
   "careerObjective": "",
@@ -55,17 +50,11 @@ Return ONLY this exact JSON structure:
   "certifications": ""
 }
 
-Formatting Rules:
-- Bullet points separated by "\\n"
-- Skills must be comma-separated (not paragraphs)
-- No markdown
-- No extra text outside JSON
-
 Resume Data:
 ${JSON.stringify(content)}
-`
-                        }
-                    ]
+`,
+                        },
+                    ],
                 }),
             }
         );
@@ -73,52 +62,16 @@ ${JSON.stringify(content)}
         const data = await response.json();
 
         if (!response.ok) {
-            console.error("Groq API Error:", data);
-            return res.status(500).json({
-                error: "Groq API failed",
-                details: data,
-            });
+            console.error("Groq Error:", data);
+            return res.status(500).json({ error: "Groq failed" });
         }
 
-        let aiText = data?.choices?.[0]?.message?.content;
+        // No parsing drama now
+        const aiOutput = JSON.parse(
+            data.choices[0].message.content
+        );
 
-        if (!aiText) {
-            return res.status(500).json({
-                error: "AI returned empty response",
-            });
-        }
-
-        // Remove markdown wrapping if any
-        aiText = aiText
-            .replace(/```json/gi, "")
-            .replace(/```/g, "")
-            .trim();
-
-        // Extract JSON safely
-        const firstBrace = aiText.indexOf("{");
-        const lastBrace = aiText.lastIndexOf("}");
-
-        if (firstBrace === -1 || lastBrace === -1) {
-            return res.status(500).json({
-                error: "AI did not return valid JSON",
-                rawOutput: aiText,
-            });
-        }
-
-        const jsonString = aiText.substring(firstBrace, lastBrace + 1);
-
-        let parsed;
-
-        try {
-            parsed = JSON.parse(jsonString);
-        } catch (err) {
-            return res.status(500).json({
-                error: "Failed to parse AI JSON",
-                rawOutput: aiText,
-            });
-        }
-
-        return res.status(200).json(parsed);
+        return res.status(200).json(aiOutput);
 
     } catch (err) {
         console.error("Server Error:", err);
