@@ -93,28 +93,28 @@ const ResumeBuilder = () => {
   };
 
   const SectionCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <div className="rounded-xl border border-border bg-card shadow-sm p-5 space-y-4">
-      <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{title}</h3>
+    <div className="rounded-xl border border-border/80 bg-card shadow-[0_1px_3px_0_rgb(0_0_0/0.04)] p-6 space-y-5">
+      <h3 className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground/80">{title}</h3>
       {children}
     </div>
   );
 
   const FieldWrapper = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div className="space-y-1.5">
-      <Label className="text-sm font-medium text-foreground/80">{label}</Label>
+    <div className="space-y-2">
+      <Label className="text-sm font-semibold text-foreground/90">{label}</Label>
       {children}
     </div>
   );
 
-  const inputClass = "h-11 rounded-lg border-border/60 bg-background shadow-none focus-visible:ring-1 focus-visible:ring-primary/40 focus-visible:ring-offset-0 transition-colors placeholder:text-muted-foreground/50";
-  const textareaClass = "min-h-[100px] rounded-lg border-border/60 bg-background shadow-none focus-visible:ring-1 focus-visible:ring-primary/40 focus-visible:ring-offset-0 transition-colors placeholder:text-muted-foreground/50";
+  const inputClass = "h-12 rounded-lg border-border/70 bg-background shadow-none text-foreground px-4 focus-visible:ring-1 focus-visible:ring-primary/40 focus-visible:ring-offset-0 transition-colors placeholder:text-muted-foreground/40";
+  const textareaClass = "min-h-[140px] rounded-lg border-border/70 bg-background shadow-none text-foreground px-4 py-3 focus-visible:ring-1 focus-visible:ring-primary/40 focus-visible:ring-offset-0 transition-colors placeholder:text-muted-foreground/40";
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "hsl(210 20% 98%)" }}>
-      <div className="container mx-auto px-4 py-8 lg:py-10 grid lg:grid-cols-2 gap-10 max-w-7xl">
+      <div className="container mx-auto px-4 py-10 lg:py-12 grid lg:grid-cols-2 gap-12 max-w-7xl">
 
         {/* FORM */}
-        <div className="space-y-6">
+        <div className="space-y-7">
           <div className="mb-2">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">Resume Builder</h1>
             <p className="text-sm text-muted-foreground mt-1">Fill in your details to generate a professional resume</p>
@@ -248,16 +248,18 @@ const ResumeBuilder = () => {
         {/* PREVIEW */}
         <div className="space-y-4">
           <div className="sticky top-6">
-            <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
-              <div className="px-5 py-3 border-b border-border bg-muted/30">
-                <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Live Preview</h3>
+            <div className="rounded-xl border border-border/80 bg-card shadow-[0_1px_3px_0_rgb(0_0_0/0.04)] overflow-hidden">
+              <div className="px-5 py-3 border-b border-border/60 bg-muted/20">
+                <h3 className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground/80">Live Preview</h3>
               </div>
-              <div className="overflow-auto max-h-[80vh]">
-                <ResumePreview
-                  data={data}
-                  isPaid={true}
-                  previewRef={previewRef}
-                />
+              <div className="overflow-visible">
+                <div className="transform origin-top scale-[0.82] w-[122%]">
+                  <ResumePreview
+                    data={data}
+                    isPaid={true}
+                    previewRef={previewRef}
+                  />
+                </div>
               </div>
             </div>
 
