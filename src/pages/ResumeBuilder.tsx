@@ -101,20 +101,20 @@ const ResumeBuilder = () => {
 
   const FieldWrapper = ({ label, children }: { label: string; children: React.ReactNode }) => (
     <div className="space-y-2">
-      <Label className="text-sm font-semibold text-foreground/90">{label}</Label>
+      <Label className="text-sm font-bold text-foreground">{label}</Label>
       {children}
     </div>
   );
 
-  const inputClass = "h-12 rounded-lg border-border bg-white shadow-none text-foreground px-4 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/60 focus-visible:ring-offset-0 transition-colors placeholder:text-muted-foreground/50";
-  const textareaClass = "min-h-[180px] rounded-lg border-border bg-white shadow-none text-foreground px-4 py-4 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/60 focus-visible:ring-offset-0 transition-colors placeholder:text-muted-foreground/50";
+  const inputClass = "h-12 rounded-lg border-border bg-white shadow-none text-foreground text-[15px] px-4 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/60 focus-visible:ring-offset-0 transition-colors placeholder:text-muted-foreground/50";
+  const textareaClass = "min-h-[200px] rounded-lg border-border bg-white shadow-none text-foreground text-[15px] px-4 py-4 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/60 focus-visible:ring-offset-0 transition-colors placeholder:text-muted-foreground/50";
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "hsl(210 20% 98%)" }}>
-      <div className="container mx-auto px-4 py-10 lg:py-12 grid lg:grid-cols-2 gap-12 max-w-7xl">
+      <div className="container mx-auto px-4 py-10 lg:py-12 grid lg:grid-cols-2 gap-14 max-w-7xl">
 
         {/* FORM */}
-        <div className="space-y-7">
+        <div className="space-y-8">
           <div className="mb-2">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">Resume Builder</h1>
             <p className="text-sm text-muted-foreground mt-1">Fill in your details to generate a professional resume</p>
@@ -248,12 +248,12 @@ const ResumeBuilder = () => {
         {/* PREVIEW */}
         <div className="space-y-4">
           <div className="sticky top-6">
-            <div className="rounded-xl border border-border/80 bg-card shadow-[0_1px_3px_0_rgb(0_0_0/0.04)] overflow-hidden max-w-[650px] mx-auto">
+            <div className="rounded-xl border border-border/80 bg-card shadow-[0_1px_3px_0_rgb(0_0_0/0.04)] overflow-hidden max-w-[620px] mx-auto">
               <div className="px-5 py-3 border-b border-border/60 bg-muted/20">
                 <h3 className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground/80">Live Preview</h3>
               </div>
               <div className="overflow-visible">
-                <div className="transform origin-top scale-[0.78] w-[128%] mx-auto">
+                <div className="transform origin-top scale-[0.75] w-[133.33%] mx-auto">
                   <ResumePreview
                     data={data}
                     isPaid={true}
@@ -265,8 +265,9 @@ const ResumeBuilder = () => {
 
             <Button
               onClick={handleDownloadPDF}
+              disabled={isGenerating}
               size="lg"
-              className="mt-5 w-full max-w-[650px] mx-auto rounded-lg font-semibold h-13 px-8 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-lg transition-all"
+              className="mt-4 max-w-[620px] mx-auto w-full rounded-lg shadow-sm font-medium"
             >
               <Download className="h-4 w-4 mr-2" />
               Download PDF – ₹49

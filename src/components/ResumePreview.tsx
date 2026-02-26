@@ -84,7 +84,6 @@ const ResumePreview = ({
         color: "#000",
         fontFamily: "Times New Roman, serif",
         width: "794px",
-        minHeight: "1123px",
         margin: "0 auto",
         padding: "60px",
         boxSizing: "border-box",
