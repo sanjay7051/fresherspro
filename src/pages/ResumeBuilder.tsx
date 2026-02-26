@@ -11,6 +11,20 @@ import ResumePreview, {
   emptyResume,
 } from "@/components/ResumePreview";
 
+const SectionCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  <div className="rounded-xl border border-border/80 bg-card shadow-[0_1px_3px_0_rgb(0_0_0/0.04)] p-6 space-y-5">
+    <h3 className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground/80">{title}</h3>
+    {children}
+  </div>
+);
+
+const FieldWrapper = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <div className="space-y-2">
+    <Label className="text-sm font-bold text-foreground">{label}</Label>
+    {children}
+  </div>
+);
+
 const ResumeBuilder = () => {
   const [data, setData] = useState<ResumeData>(emptyResume);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -92,19 +106,6 @@ const ResumeBuilder = () => {
     toast.success("Resume downloaded successfully!");
   };
 
-  const SectionCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <div className="rounded-xl border border-border/80 bg-card shadow-[0_1px_3px_0_rgb(0_0_0/0.04)] p-6 space-y-5">
-      <h3 className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground/80">{title}</h3>
-      {children}
-    </div>
-  );
-
-  const FieldWrapper = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div className="space-y-2">
-      <Label className="text-sm font-bold text-foreground">{label}</Label>
-      {children}
-    </div>
-  );
 
   const inputClass = "h-12 rounded-lg border-border bg-white shadow-none text-foreground text-[15px] px-4 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/60 focus-visible:ring-offset-0 transition-colors placeholder:text-muted-foreground/50";
   const textareaClass = "min-h-[200px] rounded-lg border-border bg-white shadow-none text-foreground text-[15px] px-4 py-4 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary/60 focus-visible:ring-offset-0 transition-colors placeholder:text-muted-foreground/50";
