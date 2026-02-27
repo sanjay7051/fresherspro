@@ -49,14 +49,15 @@ const parseBullets = (text: string): string[] =>
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
   <h2
     style={{
-      fontSize: "15px",
+      fontSize: "13px",
       fontWeight: 700,
       textTransform: "uppercase",
-      borderBottom: "1px solid #000",
-      paddingBottom: "5px",
-      marginTop: "28px",
-      marginBottom: "12px",
-      letterSpacing: "1px",
+      borderBottom: "1.5px solid #222",
+      paddingBottom: "4px",
+      marginTop: "22px",
+      marginBottom: "10px",
+      letterSpacing: "1.5px",
+      color: "#111",
     }}
   >
     {children}
@@ -81,13 +82,14 @@ const ResumePreview = ({
       ref={previewRef}
       style={{
         background: "#fff",
-        color: "#000",
-        fontFamily: "Times New Roman, serif",
+        color: "#222",
+        fontFamily: "'Times New Roman', 'Georgia', serif",
         width: "794px",
         margin: "0 auto",
-        padding: "60px",
+        padding: "48px 56px",
         boxSizing: "border-box",
-        lineHeight: "1.6",
+        lineHeight: "1.5",
+        fontSize: "13.5px",
         position: "relative",
       }}
     >
@@ -118,13 +120,14 @@ const ResumePreview = ({
       )}
 
       {/* NAME */}
-      <div style={{ textAlign: "center", marginBottom: "10px" }}>
+      <div style={{ textAlign: "center", marginBottom: "4px" }}>
         <h1
           style={{
-            fontSize: "26px",
+            fontSize: "24px",
             fontWeight: 700,
             margin: 0,
-            letterSpacing: "1px",
+            letterSpacing: "2.5px",
+            color: "#000",
           }}
         >
           {(data.fullName || "YOUR NAME").toUpperCase()}
@@ -135,8 +138,10 @@ const ResumePreview = ({
       <div
         style={{
           textAlign: "center",
-          fontSize: "14px",
-          marginBottom: "20px",
+          fontSize: "12.5px",
+          color: "#444",
+          marginBottom: "16px",
+          letterSpacing: "0.3px",
         }}
       >
         {data.phone && <span>{data.phone}</span>}
@@ -149,7 +154,7 @@ const ResumePreview = ({
       {data.careerObjective && (
         <>
           <SectionTitle>Professional Summary</SectionTitle>
-          <p style={{ margin: 0 }}>{data.careerObjective}</p>
+          <p style={{ margin: 0, lineHeight: "1.55", color: "#333" }}>{data.careerObjective}</p>
         </>
       )}
 
@@ -157,9 +162,9 @@ const ResumePreview = ({
       {experienceBullets.length > 0 && (
         <>
           <SectionTitle>Experience</SectionTitle>
-          <ul style={{ paddingLeft: "20px" }}>
+          <ul style={{ paddingLeft: "18px", margin: 0 }}>
             {experienceBullets.map((item, i) => (
-              <li key={i} style={{ marginBottom: "8px" }}>
+              <li key={i} style={{ marginBottom: "5px", lineHeight: "1.5", color: "#333" }}>
                 {item}
               </li>
             ))}
@@ -171,9 +176,9 @@ const ResumePreview = ({
       {projectBullets.length > 0 && (
         <>
           <SectionTitle>Projects</SectionTitle>
-          <ul style={{ paddingLeft: "20px" }}>
+          <ul style={{ paddingLeft: "18px", margin: 0 }}>
             {projectBullets.map((item, i) => (
-              <li key={i} style={{ marginBottom: "8px" }}>
+              <li key={i} style={{ marginBottom: "5px", lineHeight: "1.5", color: "#333" }}>
                 {item}
               </li>
             ))}
@@ -191,35 +196,35 @@ const ResumePreview = ({
             <SectionTitle>Technical Skills</SectionTitle>
 
             {data.programmingLanguages && (
-              <div>
-                <strong>Programming Languages:</strong>{" "}
+              <div style={{ marginBottom: "3px", color: "#333" }}>
+                <strong style={{ color: "#111" }}>Programming Languages:</strong>{" "}
                 {data.programmingLanguages}
               </div>
             )}
 
             {data.frameworksLibraries && (
-              <div>
-                <strong>Frameworks & Libraries:</strong>{" "}
+              <div style={{ marginBottom: "3px", color: "#333" }}>
+                <strong style={{ color: "#111" }}>Frameworks & Libraries:</strong>{" "}
                 {data.frameworksLibraries}
               </div>
             )}
 
             {data.toolsPlatforms && (
-              <div>
-                <strong>Tools & Platforms:</strong>{" "}
+              <div style={{ marginBottom: "3px", color: "#333" }}>
+                <strong style={{ color: "#111" }}>Tools & Platforms:</strong>{" "}
                 {data.toolsPlatforms}
               </div>
             )}
 
             {data.databases && (
-              <div>
-                <strong>Databases:</strong> {data.databases}
+              <div style={{ marginBottom: "3px", color: "#333" }}>
+                <strong style={{ color: "#111" }}>Databases:</strong> {data.databases}
               </div>
             )}
 
             {data.softSkills && (
-              <div>
-                <strong>Soft Skills:</strong> {data.softSkills}
+              <div style={{ marginBottom: "3px", color: "#333" }}>
+                <strong style={{ color: "#111" }}>Soft Skills:</strong> {data.softSkills}
               </div>
             )}
           </>
@@ -241,9 +246,9 @@ const ResumePreview = ({
       {certBullets.length > 0 && (
         <>
           <SectionTitle>Certifications</SectionTitle>
-          <ul style={{ paddingLeft: "20px" }}>
+          <ul style={{ paddingLeft: "18px", margin: 0 }}>
             {certBullets.map((item, i) => (
-              <li key={i} style={{ marginBottom: "6px" }}>
+              <li key={i} style={{ marginBottom: "4px", lineHeight: "1.5", color: "#333" }}>
                 {item}
               </li>
             ))}
