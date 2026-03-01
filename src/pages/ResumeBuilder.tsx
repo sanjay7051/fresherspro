@@ -1,46 +1,48 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Download, Loader2 } from "lucide-react";
+import { Sparkles, Download } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import html2pdf from "html2pdf.js";
 import ResumePreviewV2 from "@/components/resume/ResumePreviewV2";
 import ResumeFormV2 from "@/components/resume/ResumeFormV2";
+import EnhancePreviewModal from "@/components/resume/EnhancePreviewModal";
 import type { ResumeData } from "@/types/resume";
 import { emptyResume } from "@/types/resume";
+import { enhanceResume } from "@/lib/enhance-resume";
 
 const ResumeBuilder = () => {
   const [data, setData] = useState<ResumeData>(emptyResume);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [enhancedData, setEnhancedData] = useState<ResumeData | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
-  const handleGenerateResume = async () => {
+  const handleGenerateResume = () => {
     if (!data.fullName) {
       toast.error("Full Name is required.");
       return;
     }
 
-    setIsGenerating(true);
-    try {
-      const response = await fetch("/api/ai-enhance", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: data }),
-      });
+    const hasContent =
+      data.summary.trim() ||
+      data.experience.some((e) => e.bullets.some((b) => b.trim())) ||
+      data.projects.some((p) => p.bullets.some((b) => b.trim()));
 
-      if (!response.ok) throw new Error("AI request failed");
+    if (!hasContent) {
+      toast.error("Add some content to enhance (summary, experience, or projects).");
+      return;
+    }
 
-      const enhanced = await response.json();
-      setData((prev) => ({
-        ...prev,
-        ...Object.fromEntries(Object.entries(enhanced).filter(([_, v]) => v)),
-      }));
+    const result = enhanceResume(data);
+    setEnhancedData(result);
+    setShowPreview(true);
+  };
 
+  const handleAcceptEnhancement = () => {
+    if (enhancedData) {
+      setData(enhancedData);
+      setEnhancedData(null);
+      setShowPreview(false);
       toast.success("Resume enhanced successfully!");
-    } catch (error) {
-      console.error("AI ERROR:", error);
-      toast.error("AI enhancement failed.");
-    } finally {
-      setIsGenerating(false);
     }
   };
 
@@ -81,21 +83,11 @@ const ResumeBuilder = () => {
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <Button
                 onClick={handleGenerateResume}
-                disabled={isGenerating}
                 size="lg"
                 className="rounded-lg font-medium"
               >
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    Enhancing...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="h-4 w-4 mr-2" />
-                    AI Enhance Resume
-                  </>
-                )}
+                <Sparkles className="h-4 w-4 mr-2" />
+                AI Enhance Resume
               </Button>
             </div>
           </div>
@@ -125,7 +117,6 @@ const ResumeBuilder = () => {
 
               <Button
                 onClick={handleDownloadPDF}
-                disabled={isGenerating}
                 size="lg"
                 className="w-full rounded-lg font-medium"
               >
@@ -136,6 +127,16 @@ const ResumeBuilder = () => {
           </div>
         </div>
       </div>
+
+      {enhancedData && (
+        <EnhancePreviewModal
+          open={showPreview}
+          onClose={() => setShowPreview(false)}
+          original={data}
+          enhanced={enhancedData}
+          onAccept={handleAcceptEnhancement}
+        />
+      )}
     </div>
   );
 };
