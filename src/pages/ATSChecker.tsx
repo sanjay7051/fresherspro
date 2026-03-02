@@ -11,15 +11,25 @@ interface ATSResult {
 }
 
 function analyzeATSFromText(text: string): ATSResult {
-  const lower = text.toLowerCase();
-  const sections = ["education", "skills", "experience", "projects", "objective", "certifications"];
+  const lower = text.toLowerCase().replace(/[:\-–—]/g, " ");
+  const sectionVariants: Record<string, string[]> = {
+    education: ["education", "academic background", "academic qualifications", "qualifications"],
+    skills: ["skills", "technical skills", "core competencies", "key skills", "competencies"],
+    experience: ["experience", "work experience", "professional experience", "employment history", "work history"],
+    projects: ["projects", "project", "personal projects", "academic projects", "key projects"],
+    objective: ["objective", "career objective", "summary", "professional summary", "profile"],
+    certifications: ["certifications", "certification", "certificates", "professional certifications"],
+  };
+  const sections = Object.keys(sectionVariants);
   const commonKeywords = [
     "python", "java", "javascript", "react", "sql", "html", "css", "git",
     "communication", "teamwork", "leadership", "problem solving",
     "machine learning", "data", "api", "database", "cloud", "agile",
   ];
 
-  const foundSections = sections.filter((s) => lower.includes(s));
+  const foundSections = sections.filter((s) =>
+    sectionVariants[s].some((variant) => lower.includes(variant))
+  );
   const sectionScore = Math.round((foundSections.length / sections.length) * 20);
 
   const foundKeywords = commonKeywords.filter((k) => lower.includes(k));
@@ -40,7 +50,9 @@ function analyzeATSFromText(text: string): ATSResult {
   const total = sectionScore + keywordScore + skillScore + formatScore + grammarScore;
 
   const suggestions: string[] = [];
-  const missingSections = sections.filter((s) => !lower.includes(s));
+  const missingSections = sections.filter((s) =>
+    !sectionVariants[s].some((variant) => lower.includes(variant))
+  );
   if (missingSections.length > 0) suggestions.push(`Add missing sections: ${missingSections.join(", ")}`);
   if (!hasBullets) suggestions.push("Use bullet points for better readability");
   if (foundKeywords.length < 5) suggestions.push("Add more industry-relevant keywords");
