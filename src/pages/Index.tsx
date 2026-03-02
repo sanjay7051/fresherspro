@@ -1,40 +1,55 @@
 import { Link } from "react-router-dom";
 import { FileText, BarChart3, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import heroImage from "@/assets/hero-office.jpg";
 
 const HeroSection = () => {
   return (
-    <section className="relative overflow-hidden bg-background py-20 md:py-32">
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-primary rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary rounded-full blur-3xl" />
-      </div>
-      <div className="container relative mx-auto px-4 text-center">
-        <div className="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-1.5 text-sm font-medium text-accent-foreground mb-6">
-          <FileText className="h-4 w-4" />
-          Built for Indian Students & Freshers
-        </div>
-        <h1 className="mx-auto max-w-3xl text-4xl font-extrabold tracking-tight text-foreground md:text-6xl">
-          Build a Professional Resume in{" "}
-          <span className="text-primary">60 Seconds</span>
+    <section
+      className="relative flex items-center justify-center overflow-hidden"
+      style={{ height: "90vh" }}
+    >
+      <img
+        src={heroImage}
+        alt="Professional office workspace"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+      <div
+        className="absolute inset-0"
+        style={{ backgroundColor: "rgba(0,0,0,0.65)" }}
+      />
+      <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
+        <h1
+          className="font-extrabold tracking-tight text-white"
+          style={{ fontSize: "clamp(2.25rem, 5vw, 3.5rem)", lineHeight: 1.15 }}
+        >
+          Build a Resume That Gets You Hired.
         </h1>
-        <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground">
-          AI-powered Resume Builder & ATS Score Checker for Students.
-          Get hired faster with resumes that pass Applicant Tracking Systems.
+        <p
+          className="mx-auto mt-5 max-w-xl font-medium text-white/80"
+          style={{ fontSize: "clamp(1rem, 2vw, 1.25rem)" }}
+        >
+          Professional. ATS-Optimized. Recruiter-Approved.
         </p>
-        <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+        <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <Link to="/builder">
-            <Button size="lg" className="text-base px-8 py-6 font-semibold shadow-lg">
-              Create My Resume – Free Preview
+            <Button
+              size="lg"
+              className="rounded-lg px-8 py-6 text-base font-semibold"
+              style={{ backgroundColor: "#1E3A8A", color: "#fff" }}
+            >
+              Create My Resume
             </Button>
           </Link>
-          <Link to="/ats">
-            <Button variant="outline" size="lg" className="text-base px-8 py-6 font-semibold">
-              Check ATS Score
+          <Link to="/builder">
+            <Button
+              size="lg"
+              className="rounded-lg border border-white/60 bg-transparent px-8 py-6 text-base font-semibold text-white hover:bg-white/10"
+            >
+              View Sample Resume
             </Button>
           </Link>
         </div>
-        <p className="mt-4 text-sm text-muted-foreground">No signup required • 100% free preview</p>
       </div>
     </section>
   );
