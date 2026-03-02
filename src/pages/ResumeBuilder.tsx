@@ -1,146 +1,211 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Download } from "lucide-react";
-import { toast } from "@/components/ui/sonner";
-import html2pdf from "html2pdf.js";
-import ResumePreviewV2 from "@/components/resume/ResumePreviewV2";
-import ResumeFormV2 from "@/components/resume/ResumeFormV2";
-import EnhancePreviewModal from "@/components/resume/EnhancePreviewModal";
-import type { ResumeData } from "@/types/resume";
-import { emptyResume } from "@/types/resume";
-import { enhanceResume } from "@/lib/enhance-resume";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { CheckCircle2, AlertTriangle } from "lucide-react";
+
+interface ResumeData {
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+  summary: string;
+  skills: string;
+  education: string;
+  projects: string;
+  experience: string;
+  certifications: string;
+}
 
 const ResumeBuilder = () => {
-  const [data, setData] = useState<ResumeData>(emptyResume);
-  const [enhancedData, setEnhancedData] = useState<ResumeData | null>(null);
-  const [showPreview, setShowPreview] = useState(false);
-  const previewRef = useRef<HTMLDivElement>(null);
+  const [isFresher, setIsFresher] = useState(true);
 
-  const handleGenerateResume = () => {
-    if (!data.fullName) {
-      toast.error("Full Name is required.");
-      return;
-    }
+  const [data, setData] = useState<ResumeData>({
+    name: "",
+    email: "",
+    phone: "",
+    role: "",
+    summary: "",
+    skills: "",
+    education: "",
+    projects: "",
+    experience: "",
+    certifications: "",
+  });
 
-    const hasContent =
-      data.summary.trim() ||
-      data.experience.some((e) => e.bullets.some((b) => b.trim())) ||
-      data.projects.some((p) => p.bullets.some((b) => b.trim()));
+  const [score, setScore] = useState<number | null>(null);
+  const [missing, setMissing] = useState<string[]>([]);
 
-    if (!hasContent) {
-      toast.error("Add some content to enhance (summary, experience, or projects).");
-      return;
-    }
-
-    const result = enhanceResume(data);
-    setEnhancedData(result);
-    setShowPreview(true);
-  };
-
-  const handleAcceptEnhancement = () => {
-    if (enhancedData) {
-      setData(enhancedData);
-      setEnhancedData(null);
-      setShowPreview(false);
-      toast.success("Resume enhanced successfully!");
+  const handleChange = (field: keyof ResumeData, value: string) => {
+    if (field === "phone") {
+      const onlyNumbers = value.replace(/\D/g, "");
+      if (onlyNumbers.length <= 10) {
+        setData({ ...data, phone: onlyNumbers });
+      }
+    } else {
+      setData({ ...data, [field]: value });
     }
   };
 
-  const handleDownloadPDF = async () => {
-    if (data.phone && data.phone.length !== 10) {
-      toast.error("Phone number must be exactly 10 digits.");
-      return;
-    }
-    if (!previewRef.current) return;
+  const analyzeATS = () => {
+    let total = 0;
+    const missingFields: string[] = [];
 
-    await html2pdf()
-      .set({
-        margin: 0,
-        filename: `${data.fullName || "Resume"}.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
-      })
-      .from(previewRef.current)
-      .save();
+    const fieldsToCheck = [
+      "name",
+      "email",
+      "phone",
+      "role",
+      "summary",
+      "skills",
+      "education",
+      "projects",
+    ];
 
-    toast.success("Resume downloaded!");
+    if (!isFresher) fieldsToCheck.push("experience");
+
+    fieldsToCheck.forEach((field) => {
+      if (data[field as keyof ResumeData].trim().length > 5) {
+        total += 10;
+      } else {
+        missingFields.push(field);
+      }
+    });
+
+    setScore(total);
+    setMissing(missingFields);
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-[1100px] mx-auto px-6 py-10 lg:py-12">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Resume Builder</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Build a professional, ATS-friendly resume
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 px-6 py-12">
+      <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-10 border">
+
+        <h1 className="text-3xl font-bold text-center mb-8">
+          Build Your Professional Resume
+        </h1>
+
+        {/* Fresher Toggle */}
+        <div className="flex justify-center gap-4 mb-8">
+          <Button
+            variant={isFresher ? "default" : "outline"}
+            onClick={() => setIsFresher(true)}
+          >
+            Fresher
+          </Button>
+          <Button
+            variant={!isFresher ? "default" : "outline"}
+            onClick={() => setIsFresher(false)}
+          >
+            Experienced
+          </Button>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-10">
-          {/* FORM */}
-          <div className="space-y-6">
-            <ResumeFormV2 data={data} setData={setData} />
+        <div className="grid grid-cols-2 gap-6">
+          <Input
+            placeholder="Full Name"
+            value={data.name}
+            onChange={(e) => handleChange("name", e.target.value)}
+          />
+          <Input
+            placeholder="Email"
+            value={data.email}
+            onChange={(e) => handleChange("email", e.target.value)}
+          />
 
-            {/* Actions */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              <Button
-                onClick={handleGenerateResume}
-                size="lg"
-                className="rounded-lg font-medium"
-              >
-                <Sparkles className="h-4 w-4 mr-2" />
-                AI Enhance Resume
-              </Button>
-            </div>
-          </div>
+          <Input
+            placeholder="Phone (10 digits)"
+            value={data.phone}
+            onChange={(e) => handleChange("phone", e.target.value)}
+          />
 
-          {/* PREVIEW */}
-          <div>
-            <div className="sticky top-6 space-y-4">
-              <div className="rounded-xl border border-border bg-card overflow-hidden">
-                <div className="px-4 py-2.5 border-b border-border">
-                  <h3 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                    Live Preview
-                  </h3>
+          <Input
+            placeholder={
+              isFresher
+                ? "Target Role (e.g. Frontend Developer)"
+                : "Current Role"
+            }
+            value={data.role}
+            onChange={(e) => handleChange("role", e.target.value)}
+          />
+        </div>
+
+        <div className="mt-6 space-y-6">
+          <Textarea
+            placeholder="Professional Summary"
+            value={data.summary}
+            onChange={(e) => handleChange("summary", e.target.value)}
+          />
+
+          <Textarea
+            placeholder="Skills (comma separated)"
+            value={data.skills}
+            onChange={(e) => handleChange("skills", e.target.value)}
+          />
+
+          <Textarea
+            placeholder="Education"
+            value={data.education}
+            onChange={(e) => handleChange("education", e.target.value)}
+          />
+
+          <Textarea
+            placeholder="Projects"
+            value={data.projects}
+            onChange={(e) => handleChange("projects", e.target.value)}
+          />
+
+          {!isFresher && (
+            <Textarea
+              placeholder="Work Experience"
+              value={data.experience}
+              onChange={(e) => handleChange("experience", e.target.value)}
+            />
+          )}
+
+          <Textarea
+            placeholder="Certifications"
+            value={data.certifications}
+            onChange={(e) =>
+              handleChange("certifications", e.target.value)
+            }
+          />
+        </div>
+
+        <div className="text-center mt-8">
+          <Button size="lg" onClick={analyzeATS}>
+            Check ATS Score
+          </Button>
+        </div>
+
+        {score !== null && (
+          <div className="mt-10 text-center">
+            <h2 className="text-5xl font-bold text-green-600">
+              {score} / 100
+            </h2>
+
+            {missing.length > 0 ? (
+              <div className="mt-6 bg-red-50 border p-6 rounded-xl">
+                <div className="flex items-center gap-2 justify-center mb-3">
+                  <AlertTriangle className="h-5 w-5 text-red-500" />
+                  <span className="font-semibold">
+                    Improve These Sections
+                  </span>
                 </div>
-                <div className="overflow-hidden bg-muted/30 p-4">
-                  <div
-                    className="origin-top-left"
-                    style={{
-                      transform: "scale(0.52)",
-                      width: "794px",
-                      transformOrigin: "top left",
-                    }}
-                  >
-                    <ResumePreviewV2 data={data} previewRef={previewRef} />
-                  </div>
-                </div>
+                <ul className="text-sm space-y-2">
+                  {missing.map((m) => (
+                    <li key={m}>• {m}</li>
+                  ))}
+                </ul>
               </div>
-
-              <Button
-                onClick={handleDownloadPDF}
-                size="lg"
-                className="w-full rounded-lg font-medium"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Download PDF – ₹49
-              </Button>
-            </div>
+            ) : (
+              <div className="mt-6 bg-green-50 border p-6 rounded-xl flex items-center justify-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-green-600" />
+                <span>Excellent Resume Structure!</span>
+              </div>
+            )}
           </div>
-        </div>
+        )}
       </div>
-
-      {enhancedData && (
-        <EnhancePreviewModal
-          open={showPreview}
-          onClose={() => setShowPreview(false)}
-          original={data}
-          enhanced={enhancedData}
-          onAccept={handleAcceptEnhancement}
-        />
-      )}
     </div>
   );
 };
