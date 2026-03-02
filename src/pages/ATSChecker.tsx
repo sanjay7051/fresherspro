@@ -1,7 +1,19 @@
 import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Upload, BarChart3, AlertTriangle, CheckCircle2, FileText, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Upload,
+  BarChart3,
+  AlertTriangle,
+  CheckCircle2,
+  FileText,
+  X,
+} from "lucide-react";
+import * as pdfjsLib from "pdfjs-dist";
+
+// PDF worker setup
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 interface ATSResult {
   score: number;
@@ -10,7 +22,25 @@ interface ATSResult {
   missingKeywords: string[];
 }
 
-/* -------------------- ATS LOGIC -------------------- */
+/* ================= PDF TEXT EXTRACTION ================= */
+
+async function extractTextFromPDF(file: File): Promise<string> {
+  const buffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+
+  let fullText = "";
+
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    const strings = content.items.map((item: any) => item.str);
+    fullText += strings.join(" ") + " ";
+  }
+
+  return fullText;
+}
+
+/* ================= ATS ANALYSIS LOGIC ================= */
 
 function analyzeATS(text: string): ATSResult {
   const normalized = text
@@ -104,7 +134,7 @@ function analyzeATS(text: string): ATSResult {
     suggestions.push("Add more descriptive sentences");
 
   if (!hasNumbers)
-    suggestions.push("Include quantified achievements (numbers, percentages)");
+    suggestions.push("Include quantified achievements");
 
   const missingKeywords = commonKeywords
     .filter((k) => !normalized.includes(k))
@@ -124,28 +154,38 @@ function analyzeATS(text: string): ATSResult {
   };
 }
 
-/* -------------------- COMPONENT -------------------- */
+/* ================= COMPONENT ================= */
 
 const ATSChecker = () => {
   const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<ATSResult | null>(null);
+  const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleAnalyze = async () => {
     if (!file) return;
-    const text = await file.text();
-    setResult(analyzeATS(text));
+    setLoading(true);
+
+    try {
+      const text = await extractTextFromPDF(file);
+      const analysis = analyzeATS(text);
+      setResult(analysis);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 border-b bg-background/80 backdrop-blur-md">
-        <div className="container mx-auto flex items-center justify-between px-4 py-3">
-          <Link to="/" className="flex items-center gap-2 text-sm text-muted-foreground">
+      <header className="border-b bg-background/80 backdrop-blur-md">
+        <div className="container mx-auto flex justify-between px-4 py-3">
+          <Link to="/" className="flex items-center gap-2 text-sm">
             <ArrowLeft className="h-4 w-4" /> Back
           </Link>
-          <span className="text-lg font-bold text-primary">FreshersPro</span>
+          <span className="font-bold text-primary">FreshersPro</span>
           <Link to="/builder">
             <Button size="sm">Build Resume</Button>
           </Link>
@@ -153,7 +193,6 @@ const ATSChecker = () => {
       </header>
 
       <div className="container mx-auto max-w-3xl px-4 py-10">
-
         <div className="text-center mb-8">
           <BarChart3 className="mx-auto h-10 w-10 text-primary mb-4" />
           <h1 className="text-3xl font-bold">ATS Score Checker</h1>
@@ -162,109 +201,84 @@ const ATSChecker = () => {
           </p>
         </div>
 
+        {/* Upload */}
         <div
           onClick={() => inputRef.current?.click()}
-          className="cursor-pointer rounded-xl border-2 border-dashed p-10 text-center"
+          className="cursor-pointer border-2 border-dashed rounded-xl p-10 text-center"
         >
           <input
             ref={inputRef}
             type="file"
             accept=".pdf"
             className="hidden"
-            onChange={(e) => e.target.files && setFile(e.target.files[0])}
+            onChange={(e) =>
+              e.target.files && setFile(e.target.files[0])
+            }
           />
           <Upload className="mx-auto h-8 w-8 mb-3" />
-          <p>Click to upload your resume (PDF)</p>
+          <p>Click to upload PDF resume</p>
         </div>
 
         {file && (
-          <div className="mt-4 text-center">
-            <p className="text-sm">{file.name}</p>
+          <div className="mt-4 text-center text-sm">
+            {file.name}
           </div>
         )}
 
         <div className="mt-6 text-center">
-          <Button onClick={handleAnalyze}>
-            Analyze ATS Score
+          <Button onClick={handleAnalyze} disabled={!file || loading}>
+            {loading ? "Analyzing..." : "Analyze ATS Score"}
           </Button>
         </div>
 
         {result && (
-          <div className="mt-10 space-y-10">
-
-            {/* TOTAL SCORE */}
+          <div className="mt-10 space-y-8">
             <div className="text-center">
-              <p className="text-6xl font-extrabold text-primary">
-                {result.score}
-              </p>
-              <p className="text-sm text-muted-foreground">out of 100</p>
+              <h2 className="text-6xl font-bold text-primary">
+                {result.score} / 100
+              </h2>
             </div>
 
-            {/* BREAKDOWN */}
-            <div className="rounded-xl border bg-card p-6">
-              <h3 className="font-semibold mb-4 text-lg">Score Breakdown</h3>
-              <div className="space-y-5">
-                {result.breakdown.map((item) => (
-                  <div key={item.label}>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span>{item.label}</span>
-                      <span>{item.score} / {item.max}</span>
-                    </div>
-                    <div className="h-3 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-primary transition-all duration-500"
-                        style={{ width: `${(item.score / item.max) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
+            {result.breakdown.map((b) => (
+              <div key={b.label}>
+                <div className="flex justify-between text-sm mb-2">
+                  <span>{b.label}</span>
+                  <span>{b.score}/{b.max}</span>
+                </div>
+                <div className="h-3 bg-muted rounded-full">
+                  <div
+                    className="h-full bg-primary"
+                    style={{
+                      width: `${(b.score / b.max) * 100}%`,
+                    }}
+                  />
+                </div>
               </div>
-            </div>
+            ))}
 
-            {/* SUGGESTIONS */}
             {result.suggestions.length > 0 && (
-              <div className="rounded-xl border bg-card p-6">
-                <h3 className="font-semibold mb-3 text-lg">Suggestions</h3>
-                <ul className="space-y-2 text-sm text-muted-foreground">
+              <div>
+                <h3 className="font-semibold">Suggestions</h3>
+                <ul className="list-disc pl-5 text-sm text-muted-foreground">
                   {result.suggestions.map((s, i) => (
-                    <li key={i}>• {s}</li>
+                    <li key={i}>{s}</li>
                   ))}
                 </ul>
               </div>
             )}
 
-            {/* MISSING KEYWORDS */}
-            {result.missingKeywords.length > 0 && (
-              <div className="rounded-xl border bg-card p-6">
-                <h3 className="font-semibold mb-3 text-lg">
-                  Consider Adding These Keywords
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {result.missingKeywords.map((k) => (
-                    <span
-                      key={k}
-                      className="bg-accent px-3 py-1 text-xs rounded-full"
-                    >
-                      {k}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* CTA */}
-            <div className="text-center pt-4">
+            <div className="text-center">
               <Button
                 size="lg"
-                onClick={() => navigate("/builder")}
+                onClick={() =>
+                  navigate("/builder", { state: result })
+                }
               >
                 Rebuild My Resume Professionally
               </Button>
             </div>
-
           </div>
         )}
-
       </div>
     </div>
   );
