@@ -190,40 +190,65 @@ const ATSChecker = () => {
         </div>
 
         {result && (
-          <div className="mt-10 space-y-8">
+          <div className="mt-10 space-y-10">
 
-            {/* Total Score */}
+            {/* TOTAL SCORE */}
             <div className="text-center">
-              <h2 className="text-5xl font-bold">{result.score} / 100</h2>
+              <p className="text-6xl font-extrabold text-primary">
+                {result.score}
+              </p>
+              <p className="text-sm text-muted-foreground">out of 100</p>
             </div>
 
-            {/* Breakdown */}
-            <div className="space-y-4">
-              {result.breakdown.map((b) => (
-                <div key={b.label}>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>{b.label}</span>
-                    <span>{b.score}/{b.max}</span>
+            {/* BREAKDOWN */}
+            <div className="rounded-xl border bg-card p-6">
+              <h3 className="font-semibold mb-4 text-lg">Score Breakdown</h3>
+              <div className="space-y-5">
+                {result.breakdown.map((item) => (
+                  <div key={item.label}>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span>{item.label}</span>
+                      <span>{item.score} / {item.max}</span>
+                    </div>
+                    <div className="h-3 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-primary transition-all duration-500"
+                        style={{ width: `${(item.score / item.max) * 100}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="h-2 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-primary"
-                      style={{ width: `${(b.score / b.max) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
-            {/* Suggestions */}
+            {/* SUGGESTIONS */}
             {result.suggestions.length > 0 && (
-              <div>
-                <h3 className="font-semibold mb-2">Suggestions</h3>
-                <ul className="list-disc pl-5 text-sm text-muted-foreground">
+              <div className="rounded-xl border bg-card p-6">
+                <h3 className="font-semibold mb-3 text-lg">Suggestions</h3>
+                <ul className="space-y-2 text-sm text-muted-foreground">
                   {result.suggestions.map((s, i) => (
-                    <li key={i}>{s}</li>
+                    <li key={i}>• {s}</li>
                   ))}
                 </ul>
+              </div>
+            )}
+
+            {/* MISSING KEYWORDS */}
+            {result.missingKeywords.length > 0 && (
+              <div className="rounded-xl border bg-card p-6">
+                <h3 className="font-semibold mb-3 text-lg">
+                  Consider Adding These Keywords
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {result.missingKeywords.map((k) => (
+                    <span
+                      key={k}
+                      className="bg-accent px-3 py-1 text-xs rounded-full"
+                    >
+                      {k}
+                    </span>
+                  ))}
+                </div>
               </div>
             )}
 
