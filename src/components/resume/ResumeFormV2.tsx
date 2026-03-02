@@ -189,8 +189,21 @@ const ResumeFormV2 = ({ data, setData }: ResumeFormV2Props) => {
           </Field>
         </div>
         <div className="grid sm:grid-cols-2 gap-3">
-          <Field label="Phone">
-            <Input value={data.phone} onChange={updateField("phone")} placeholder="+91 98765 43210" className={inputClass} />
+          <Field label="Phone (10 digits)">
+            <Input
+              value={data.phone}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+                setData((prev) => ({ ...prev, phone: val }));
+              }}
+              placeholder="9876543210"
+              className={inputClass}
+              maxLength={10}
+              inputMode="numeric"
+            />
+            {data.phone.length > 0 && data.phone.length !== 10 && (
+              <p className="text-xs text-destructive mt-1">Phone number must be exactly 10 digits</p>
+            )}
           </Field>
           <Field label="Email">
             <Input type="email" value={data.email} onChange={updateField("email")} placeholder="john@example.com" className={inputClass} />
