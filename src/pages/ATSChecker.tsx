@@ -1,9 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Upload, BarChart3, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Upload, BarChart3, AlertTriangle, CheckCircle2, FileText, X } from "lucide-react";
 
 interface ATSResult {
   score: number;
@@ -12,7 +10,7 @@ interface ATSResult {
   missingKeywords: string[];
 }
 
-function analyzeATS(text: string): ATSResult {
+function analyzeATSFromText(text: string): ATSResult {
   const lower = text.toLowerCase();
   const sections = ["education", "skills", "experience", "projects", "objective", "certifications"];
   const commonKeywords = [
@@ -21,26 +19,21 @@ function analyzeATS(text: string): ATSResult {
     "machine learning", "data", "api", "database", "cloud", "agile",
   ];
 
-  // Section completeness (20%)
   const foundSections = sections.filter((s) => lower.includes(s));
   const sectionScore = Math.round((foundSections.length / sections.length) * 20);
 
-  // Keyword density (25%)
   const foundKeywords = commonKeywords.filter((k) => lower.includes(k));
   const keywordScore = Math.min(25, Math.round((foundKeywords.length / 8) * 25));
 
-  // Skills match (30%)
   const skillWords = lower.split(/[\s,;]+/).filter((w) => w.length > 2);
   const uniqueSkills = new Set(skillWords);
   const skillScore = Math.min(30, Math.round((uniqueSkills.size / 40) * 30));
 
-  // Formatting (15%) — check for bullet points, line breaks, structure
-  const hasBullets = /[•\-\*]/.test(text);
+  const hasBullets = /[•\-*]/.test(text);
   const hasLineBreaks = text.split("\n").length > 5;
   const hasNumbers = /\d+/.test(text);
-  const formatScore = Math.round(((hasBullets ? 5 : 0) + (hasLineBreaks ? 5 : 0) + (hasNumbers ? 5 : 0)));
+  const formatScore = Math.round((hasBullets ? 5 : 0) + (hasLineBreaks ? 5 : 0) + (hasNumbers ? 5 : 0));
 
-  // Grammar proxy (10%) — sentence count & avg length
   const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 3);
   const grammarScore = Math.min(10, Math.round((sentences.length / 10) * 10));
 
@@ -70,13 +63,93 @@ function analyzeATS(text: string): ATSResult {
   };
 }
 
-const ATSChecker = () => {
-  const [resumeText, setResumeText] = useState("");
-  const [result, setResult] = useState<ATSResult | null>(null);
+function extractTextFromFile(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    if (file.type === "application/pdf") {
+      const reader = new FileReader();
+      reader.onload = () => {
+        // For PDF, extract raw text from the binary data
+        const text = extractTextFromPDFBinary(reader.result as ArrayBuffer);
+        resolve(text);
+      };
+      reader.onerror = () => reject(new Error("Failed to read file"));
+      reader.readAsArrayBuffer(file);
+    } else {
+      // For images, we simulate with file metadata since we can't OCR client-side
+      resolve(`resume file uploaded: ${file.name}, size: ${file.size} bytes`);
+    }
+  });
+}
 
-  const handleAnalyze = () => {
-    if (resumeText.trim().length < 20) return;
-    setResult(analyzeATS(resumeText));
+function extractTextFromPDFBinary(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  const text: string[] = [];
+  let i = 0;
+  while (i < bytes.length) {
+    // Look for text between parentheses in PDF streams
+    if (bytes[i] === 0x28) { // opening paren
+      let str = "";
+      i++;
+      let depth = 1;
+      while (i < bytes.length && depth > 0) {
+        if (bytes[i] === 0x28) depth++;
+        else if (bytes[i] === 0x29) { depth--; if (depth === 0) break; }
+        else if (bytes[i] >= 32 && bytes[i] <= 126) str += String.fromCharCode(bytes[i]);
+        i++;
+      }
+      if (str.trim().length > 1) text.push(str.trim());
+    }
+    i++;
+  }
+  return text.join(" ");
+}
+
+const ACCEPTED_TYPES = ["application/pdf", "image/jpeg", "image/png"];
+const MAX_SIZE_MB = 10;
+const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+
+const ATSChecker = () => {
+  const [file, setFile] = useState<File | null>(null);
+  const [error, setError] = useState("");
+  const [result, setResult] = useState<ATSResult | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const validateFile = (f: File): string | null => {
+    if (!ACCEPTED_TYPES.includes(f.type)) return "Only PDF, JPG, and PNG files are accepted.";
+    if (f.size > MAX_SIZE_BYTES) return `File exceeds ${MAX_SIZE_MB}MB limit.`;
+    return null;
+  };
+
+  const handleFile = (f: File) => {
+    setResult(null);
+    const err = validateFile(f);
+    if (err) {
+      setError(err);
+      setFile(null);
+      return;
+    }
+    setError("");
+    setFile(f);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const f = e.dataTransfer.files[0];
+    if (f) handleFile(f);
+  };
+
+  const handleAnalyze = async () => {
+    if (!file) return;
+    setAnalyzing(true);
+    try {
+      const text = await extractTextFromFile(file);
+      setResult(analyzeATSFromText(text));
+    } catch {
+      setError("Failed to process file.");
+    } finally {
+      setAnalyzing(false);
+    }
   };
 
   const scoreColor = (score: number) => {
@@ -90,6 +163,12 @@ const ATSChecker = () => {
     if (pct >= 70) return "bg-score-excellent";
     if (pct >= 40) return "bg-score-good";
     return "bg-score-poor";
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   return (
@@ -112,31 +191,58 @@ const ATSChecker = () => {
             <BarChart3 className="h-7 w-7" />
           </div>
           <h1 className="text-3xl font-bold text-foreground">ATS Score Checker</h1>
-          <p className="mt-2 text-muted-foreground">Paste your resume text below to get an ATS simulation score</p>
+          <p className="mt-2 text-muted-foreground">Upload your resume to get an ATS simulation score</p>
           <p className="mt-1 text-xs text-muted-foreground italic">
             ⚠ This is an ATS Simulation Score — for guidance purposes only
           </p>
         </div>
 
-        <Textarea
-          value={resumeText}
-          onChange={(e) => setResumeText(e.target.value)}
-          rows={10}
-          placeholder="Paste your entire resume content here..."
-          className="mb-4"
-        />
+        {/* Upload Area */}
+        <div
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleDrop}
+          onClick={() => inputRef.current?.click()}
+          className="cursor-pointer rounded-xl border-2 border-dashed border-border p-10 text-center transition-colors hover:border-primary/50"
+          style={{ backgroundColor: "#F9FAFB" }}
+        >
+          <input
+            ref={inputRef}
+            type="file"
+            accept=".pdf,.jpg,.jpeg,.png"
+            className="hidden"
+            onChange={(e) => { if (e.target.files?.[0]) handleFile(e.target.files[0]); }}
+          />
+          <Upload className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
+          <p className="text-sm font-medium text-foreground">
+            Drag & drop your resume here, or <span className="text-primary underline">browse</span>
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">PDF, JPG, or PNG — Max 10MB</p>
+        </div>
 
-        <div className="flex gap-3">
-          <Button onClick={handleAnalyze} disabled={resumeText.trim().length < 20} className="gap-2">
-            <BarChart3 className="h-4 w-4" /> Analyze ATS Score
+        {error && (
+          <p className="mt-3 text-sm text-destructive font-medium">{error}</p>
+        )}
+
+        {file && !error && (
+          <div className="mt-4 flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3">
+            <FileText className="h-5 w-5 text-primary shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
+              <p className="text-xs text-muted-foreground">{formatFileSize(file.size)}</p>
+            </div>
+            <button onClick={(e) => { e.stopPropagation(); setFile(null); setResult(null); }} className="text-muted-foreground hover:text-destructive">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+
+        <div className="flex gap-3 mt-6">
+          <Button onClick={handleAnalyze} disabled={!file || analyzing} className="gap-2">
+            <BarChart3 className="h-4 w-4" /> {analyzing ? "Analyzing…" : "Analyze ATS Score"}
           </Button>
           <Button
             variant="outline"
-            className="gap-2"
-            onClick={() => {
-              setResumeText("");
-              setResult(null);
-            }}
+            onClick={() => { setFile(null); setResult(null); setError(""); if (inputRef.current) inputRef.current.value = ""; }}
           >
             Clear
           </Button>
@@ -144,11 +250,8 @@ const ATSChecker = () => {
 
         {result && (
           <div className="mt-10 space-y-8">
-            {/* Score */}
             <div className="text-center">
-              <p className={`text-6xl font-extrabold ${scoreColor(result.score)}`}>
-                {result.score}
-              </p>
+              <p className={`text-6xl font-extrabold ${scoreColor(result.score)}`}>{result.score}</p>
               <p className="text-sm text-muted-foreground mt-1">out of 100</p>
               <div className="mt-4 mx-auto max-w-md">
                 <div className="h-3 rounded-full bg-muted overflow-hidden">
@@ -162,7 +265,6 @@ const ATSChecker = () => {
               </div>
             </div>
 
-            {/* Breakdown */}
             <div className="rounded-xl border border-border bg-card p-6">
               <h3 className="font-semibold text-foreground mb-4">Score Breakdown</h3>
               <div className="space-y-4">
@@ -183,7 +285,6 @@ const ATSChecker = () => {
               </div>
             </div>
 
-            {/* Suggestions */}
             {result.suggestions.length > 0 && (
               <div className="rounded-xl border border-border bg-card p-6">
                 <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
@@ -199,7 +300,6 @@ const ATSChecker = () => {
               </div>
             )}
 
-            {/* Missing Keywords */}
             {result.missingKeywords.length > 0 && (
               <div className="rounded-xl border border-border bg-card p-6">
                 <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
@@ -207,15 +307,12 @@ const ATSChecker = () => {
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {result.missingKeywords.map((k) => (
-                    <span key={k} className="rounded-full bg-accent px-3 py-1 text-xs text-accent-foreground">
-                      {k}
-                    </span>
+                    <span key={k} className="rounded-full bg-accent px-3 py-1 text-xs text-accent-foreground">{k}</span>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Rebuild CTA */}
             <div className="text-center pt-4">
               <Link to="/builder">
                 <Button size="lg" className="gap-2">

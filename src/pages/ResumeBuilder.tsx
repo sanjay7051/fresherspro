@@ -47,6 +47,10 @@ const ResumeBuilder = () => {
   };
 
   const handleDownloadPDF = async () => {
+    if (data.phone && data.phone.length !== 10) {
+      toast.error("Phone number must be exactly 10 digits.");
+      return;
+    }
     if (!previewRef.current) return;
 
     await html2pdf()
