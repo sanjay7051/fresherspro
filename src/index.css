@@ -56,7 +56,8 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    line-height: 1.6; /* FIXED CONGESTION */
+    line-height: 1.6;
+    /* FIXED CONGESTION */
   }
 
   h1 {
@@ -85,7 +86,8 @@
   }
 
   li {
-    margin-bottom: 0.6rem; /* Better bullet spacing */
+    margin-bottom: 0.6rem;
+    /* Better bullet spacing */
   }
 }
 
@@ -137,5 +139,39 @@
   .no-select {
     user-select: none;
     -webkit-user-select: none;
+  }
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .print-section,
+  .print-section * {
+    visibility: visible;
+  }
+
+  .print-section {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #resume-preview,
+  #resume-preview * {
+    visibility: visible;
+  }
+
+  #resume-preview {
+    position: absolute;
+    left: 0;
+    top: 0;
   }
 }
