@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Upload, BarChart3, AlertTriangle, CheckCircle2, FileText, X } from "lucide-react";
 
@@ -127,64 +127,22 @@ function analyzeATS(text: string): ATSResult {
 /* -------------------- COMPONENT -------------------- */
 
 const ATSChecker = () => {
+  const navigate = useNavigate();
   const [file, setFile] = useState<File | null>(null);
-  const [error, setError] = useState("");
   const [result, setResult] = useState<ATSResult | null>(null);
-  const [analyzing, setAnalyzing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const ACCEPTED_TYPES = ["application/pdf", "image/jpeg", "image/png"];
-  const MAX_SIZE_MB = 10;
-  const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
-
-  const validateFile = (f: File): string | null => {
-    if (!ACCEPTED_TYPES.includes(f.type))
-      return "Only PDF, JPG, and PNG files are accepted.";
-    if (f.size > MAX_SIZE_BYTES)
-      return `File exceeds ${MAX_SIZE_MB}MB limit.`;
-    return null;
-  };
-
-  const extractTextFromFile = async (f: File): Promise<string> => {
-    return await f.text(); // simple MVP text extraction
-  };
-
-  const handleFile = (f: File) => {
-    setResult(null);
-    const err = validateFile(f);
-    if (err) {
-      setError(err);
-      setFile(null);
-      return;
-    }
-    setError("");
-    setFile(f);
-  };
 
   const handleAnalyze = async () => {
     if (!file) return;
-    setAnalyzing(true);
-    try {
-      const text = await extractTextFromFile(file);
-      setResult(analyzeATS(text));
-    } catch {
-      setError("Failed to process file.");
-    } finally {
-      setAnalyzing(false);
-    }
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    const text = await file.text();
+    setResult(analyzeATS(text));
   };
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
+      <header className="sticky top-0 border-b bg-background/80 backdrop-blur-md">
         <div className="container mx-auto flex items-center justify-between px-4 py-3">
-          <Link to="/" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <Link to="/" className="flex items-center gap-2 text-sm text-muted-foreground">
             <ArrowLeft className="h-4 w-4" /> Back
           </Link>
           <span className="text-lg font-bold text-primary">FreshersPro</span>
@@ -195,63 +153,93 @@ const ATSChecker = () => {
       </header>
 
       <div className="container mx-auto max-w-3xl px-4 py-10">
+
         <div className="text-center mb-8">
           <BarChart3 className="mx-auto h-10 w-10 text-primary mb-4" />
           <h1 className="text-3xl font-bold">ATS Score Checker</h1>
-          <p className="mt-2 text-muted-foreground">
+          <p className="text-muted-foreground mt-2">
             Upload your resume to get an ATS simulation score
           </p>
         </div>
 
-        {/* Upload */}
         <div
           onClick={() => inputRef.current?.click()}
-          className="cursor-pointer rounded-xl border-2 border-dashed border-border p-10 text-center hover:border-primary/50"
-          style={{ backgroundColor: "#F9FAFB" }}
+          className="cursor-pointer rounded-xl border-2 border-dashed p-10 text-center"
         >
           <input
             ref={inputRef}
             type="file"
-            accept=".pdf,.jpg,.jpeg,.png"
+            accept=".pdf"
             className="hidden"
-            onChange={(e) => e.target.files && handleFile(e.target.files[0])}
+            onChange={(e) => e.target.files && setFile(e.target.files[0])}
           />
-          <Upload className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
-          <p className="text-sm font-medium">
-            Drag & drop or click to upload (PDF, JPG, PNG — Max 10MB)
-          </p>
+          <Upload className="mx-auto h-8 w-8 mb-3" />
+          <p>Click to upload your resume (PDF)</p>
         </div>
 
-        {error && (
-          <p className="mt-3 text-sm text-destructive font-medium">{error}</p>
-        )}
-
         {file && (
-          <div className="mt-4 flex items-center gap-3 rounded-lg border bg-card px-4 py-3">
-            <FileText className="h-5 w-5 text-primary" />
-            <div className="flex-1">
-              <p className="text-sm font-medium">{file.name}</p>
-              <p className="text-xs text-muted-foreground">
-                {formatFileSize(file.size)}
-              </p>
-            </div>
-            <button onClick={() => setFile(null)}>
-              <X className="h-4 w-4 text-muted-foreground" />
-            </button>
+          <div className="mt-4 text-center">
+            <p className="text-sm">{file.name}</p>
           </div>
         )}
 
-        <div className="mt-6">
-          <Button onClick={handleAnalyze} disabled={!file || analyzing}>
-            {analyzing ? "Analyzing…" : "Analyze ATS Score"}
+        <div className="mt-6 text-center">
+          <Button onClick={handleAnalyze}>
+            Analyze ATS Score
           </Button>
         </div>
 
         {result && (
-          <div className="mt-10 text-center">
-            <h2 className="text-5xl font-bold">{result.score} / 100</h2>
+          <div className="mt-10 space-y-8">
+
+            {/* Total Score */}
+            <div className="text-center">
+              <h2 className="text-5xl font-bold">{result.score} / 100</h2>
+            </div>
+
+            {/* Breakdown */}
+            <div className="space-y-4">
+              {result.breakdown.map((b) => (
+                <div key={b.label}>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span>{b.label}</span>
+                    <span>{b.score}/{b.max}</span>
+                  </div>
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary"
+                      style={{ width: `${(b.score / b.max) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Suggestions */}
+            {result.suggestions.length > 0 && (
+              <div>
+                <h3 className="font-semibold mb-2">Suggestions</h3>
+                <ul className="list-disc pl-5 text-sm text-muted-foreground">
+                  {result.suggestions.map((s, i) => (
+                    <li key={i}>{s}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* CTA */}
+            <div className="text-center pt-4">
+              <Button
+                size="lg"
+                onClick={() => navigate("/builder")}
+              >
+                Rebuild My Resume Professionally
+              </Button>
+            </div>
+
           </div>
         )}
+
       </div>
     </div>
   );
