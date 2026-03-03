@@ -205,8 +205,8 @@ const ResumeBuilder = () => {
     <>
       <MainHeader />
 
-      <div className="min-h-screen bg-gray-50 py-12 px-6">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12">
+      <div className="min-h-screen bg-gray-50 py-8 px-4">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
 
           {/* ================= FORM ================= */}
           <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">
