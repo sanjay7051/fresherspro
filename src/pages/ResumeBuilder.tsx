@@ -500,7 +500,7 @@ const ResumeBuilder = () => {
                 className="bg-white shadow-lg relative z-0 w-full"
                 style={{
                   maxWidth: "794px",
-                  minHeight: "1123px",
+                  minHeight: "800px",
                   padding: "clamp(16px, 4vw, 40px)",
                   boxSizing: "border-box",
                 }}
