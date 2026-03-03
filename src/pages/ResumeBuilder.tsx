@@ -474,9 +474,10 @@ const ResumeBuilder = () => {
               id="resume-preview"
               className="bg-white mx-auto shadow-lg"
               style={{
-                width: "794px",        // A4 width in px
-                minHeight: "1123px",   // A4 height in px
-                padding: "60px",
+                width: "100%",
+                maxWidth: "794px",
+                minHeight: "1123px",
+                padding: "40px",
               }}
             >
 
