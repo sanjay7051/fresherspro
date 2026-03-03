@@ -83,7 +83,7 @@ const ResumeBuilder = () => {
       }
     };
 
-    return { items, input, setInput, addItem };
+    return { items, setItems, input, setInput, addItem };
   };
 
   const languages = useSkill();
@@ -205,12 +205,11 @@ const ResumeBuilder = () => {
     <>
       <MainHeader />
 
-      <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="min-h-screen bg-gray-50 py-8 px-4 overflow-x-hidden">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
-          <div className="min-h-screen bg-gray-50 py-12 px-4 overflow-x-hidden"></div>
 
           {/* ================= FORM ================= */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">
+          <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-8 space-y-8">
 
             <h2 className="text-2xl font-bold">Resume Details</h2>
 
@@ -358,9 +357,15 @@ const ResumeBuilder = () => {
                       {section.state.items.map((item, i) => (
                         <span
                           key={i}
-                          className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs"
+                          className="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs"
                         >
                           {item}
+                          <button
+                            onClick={() => {
+                              section.state.setItems(section.state.items.filter((_, idx) => idx !== i));
+                            }}
+                            className="ml-1.5 text-red-500 hover:text-red-700 font-bold"
+                          >×</button>
                         </span>
                       ))}
                     </div>
@@ -384,7 +389,7 @@ const ResumeBuilder = () => {
             {/* PROJECTS */}
             <div>
               <h3 className="font-semibold">Projects</h3>
-              <div className="flex gap-3">
+          <div className="flex gap-3">
                 <Input
                   value={projectInput}
                   placeholder="E-commerce Website using MERN"
@@ -401,9 +406,15 @@ const ResumeBuilder = () => {
                 </Button>
               </div>
 
-              <ul className="mt-2 text-sm">
+              <ul className="mt-2 text-sm space-y-1">
                 {projects.map((proj, i) => (
-                  <li key={i}>• {proj}</li>
+                  <li key={i} className="flex items-center justify-between">
+                    <span>• {proj}</span>
+                    <button
+                      onClick={() => setProjects(projects.filter((_, idx) => idx !== i))}
+                      className="text-xs bg-red-100 hover:bg-red-200 text-red-600 rounded-full ml-2 px-1.5 py-0.5 cursor-pointer"
+                    >✕</button>
+                  </li>
                 ))}
               </ul>
             </div>
@@ -428,9 +439,15 @@ const ResumeBuilder = () => {
                 </Button>
               </div>
 
-              <ul className="mt-2 text-sm">
+              <ul className="mt-2 text-sm space-y-1">
                 {certs.map((c, i) => (
-                  <li key={i}>• {c}</li>
+                  <li key={i} className="flex items-center justify-between">
+                    <span>• {c}</span>
+                    <button
+                      onClick={() => setCerts(certs.filter((_, idx) => idx !== i))}
+                      className="text-xs bg-red-100 hover:bg-red-200 text-red-600 rounded-full ml-2 px-1.5 py-0.5 cursor-pointer"
+                    >✕</button>
+                  </li>
                 ))}
               </ul>
             </div>
@@ -449,9 +466,15 @@ const ResumeBuilder = () => {
                 </Button>
               </div>
 
-              <ul className="mt-2 text-sm">
+              <ul className="mt-2 text-sm space-y-1">
                 {achievements.map((a, i) => (
-                  <li key={i}>• {a}</li>
+                  <li key={i} className="flex items-center justify-between">
+                    <span>• {a}</span>
+                    <button
+                      onClick={() => setAchievements(achievements.filter((_, idx) => idx !== i))}
+                      className="text-xs bg-red-100 hover:bg-red-200 text-red-600 rounded-full ml-2 px-1.5 py-0.5 cursor-pointer"
+                    >✕</button>
+                  </li>
                 ))}
               </ul>
             </div>
@@ -462,11 +485,10 @@ const ResumeBuilder = () => {
           </div>
 
           {/* ================= PREVIEW ================= */}
-          {/* ================= PREVIEW ================= */}
-          <div className="print-section bg-gray-100 p-6 flex justify-center overflow-x-hidden relative">
+          <div className="print-section bg-gray-100 p-2 sm:p-6 flex justify-center overflow-hidden relative">
 
             {!isPaid && (
-              <div className="absolute inset-0 flex items-center justify-center text-4xl text-gray-200 font-bold rotate-[-30deg] pointer-events-none z-10">
+              <div className="absolute inset-0 flex items-center justify-center text-2xl sm:text-4xl text-gray-200 font-bold rotate-[-30deg] pointer-events-none z-10">
                 FRESHERSPRO PREVIEW
               </div>
             )}
@@ -474,12 +496,11 @@ const ResumeBuilder = () => {
             {/* A4 Resume Container */}
             <div
               id="resume-preview"
-              className="bg-white shadow-lg relative z-0"
+              className="bg-white shadow-lg relative z-0 w-full"
               style={{
-                width: "100%",
-                maxWidth: "794px",   // A4 width
-                minHeight: "1123px", // A4 height
-                padding: "40px",
+                maxWidth: "794px",
+                minHeight: "1123px",
+                padding: "clamp(16px, 4vw, 40px)",
                 boxSizing: "border-box",
               }}
             >

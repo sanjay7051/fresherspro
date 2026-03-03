@@ -12,11 +12,11 @@ const HeroSection = () => {
       <img
         src={heroImage}
         alt="Professional office workspace"
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 h-full w-full object-cover object-center"
       />
       <div
         className="absolute inset-0"
-        style={{ backgroundColor: "rgba(0,0,0,0.65)" }}
+        style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
       />
       <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
         <h1
