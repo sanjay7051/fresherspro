@@ -207,6 +207,7 @@ const ResumeBuilder = () => {
 
       <div className="min-h-screen bg-gray-50 py-8 px-4">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
+          <div className="min-h-screen bg-gray-50 py-12 px-4 overflow-x-hidden"></div>
 
           {/* ================= FORM ================= */}
           <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">
@@ -462,40 +463,44 @@ const ResumeBuilder = () => {
 
           {/* ================= PREVIEW ================= */}
           {/* ================= PREVIEW ================= */}
-          <div className="print-section bg-white p-10 relative">
+          <div className="print-section bg-gray-100 p-6 flex justify-center overflow-x-hidden relative">
+
             {!isPaid && (
-              <div className="absolute inset-0 flex items-center justify-center text-4xl text-gray-200 font-bold rotate-[-30deg] pointer-events-none">
+              <div className="absolute inset-0 flex items-center justify-center text-4xl text-gray-200 font-bold rotate-[-30deg] pointer-events-none z-10">
                 FRESHERSPRO PREVIEW
               </div>
             )}
 
-            {/* Resume Content */}
+            {/* A4 Resume Container */}
             <div
               id="resume-preview"
-              className="bg-white mx-auto shadow-lg"
+              className="bg-white shadow-lg relative z-0"
               style={{
                 width: "100%",
-                maxWidth: "794px",
-                minHeight: "1123px",
+                maxWidth: "794px",   // A4 width
+                minHeight: "1123px", // A4 height
                 padding: "40px",
+                boxSizing: "border-box",
               }}
             >
 
-            </div>
-            <div className="flex-1 space-y-6">
+              {/* Resume Content MUST be inside this div */}
+              <div className="space-y-6">
 
-              <div>
-                <h1 className="text-3xl font-bold">
-                  {form.name || "Your Name"}
-                </h1>
+                <div>
+                  <h1 className="text-3xl font-bold">
+                    {form.name || "Your Name"}
+                  </h1>
 
-                <p className="text-sm text-gray-600 mt-1">
-                  {form.email || "your@email.com"}{" "}
-                  {form.phone && ` • +91 ${form.phone}`}
-                </p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    {form.email || "your@email.com"}
+                    {form.phone && ` • +91 ${form.phone}`}
+                  </p>
 
-                <hr className="my-4" />
+                  <hr className="my-4" />
+                </div>
               </div>
+
 
               {/* OBJECTIVE */}
               {form.objective && (
