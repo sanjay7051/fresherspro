@@ -485,184 +485,159 @@ const ResumeBuilder = () => {
           </div>
 
           {/* ================= PREVIEW ================= */}
-          <div className="print-section bg-gray-100 p-2 sm:p-6 flex justify-center overflow-hidden relative">
+          <div className="flex flex-col items-center">
+            <div className="print-section bg-gray-100 p-2 sm:p-6 flex justify-center overflow-hidden relative w-full">
 
-            {!isPaid && (
-              <div className="absolute inset-0 flex items-center justify-center text-2xl sm:text-4xl text-gray-200 font-bold rotate-[-30deg] pointer-events-none z-10">
-                FRESHERSPRO PREVIEW
-              </div>
-            )}
-
-            {/* A4 Resume Container */}
-            <div
-              id="resume-preview"
-              className="bg-white shadow-lg relative z-0 w-full"
-              style={{
-                maxWidth: "794px",
-                minHeight: "1123px",
-                padding: "clamp(16px, 4vw, 40px)",
-                boxSizing: "border-box",
-              }}
-            >
-
-              {/* Resume Content MUST be inside this div */}
-              <div className="space-y-6">
-
-                <div>
-                  <h1 className="text-3xl font-bold">
-                    {form.name || "Your Name"}
-                  </h1>
-
-                  <p className="text-sm text-gray-600 mt-1">
-                    {form.email || "your@email.com"}
-                    {form.phone && ` • +91 ${form.phone}`}
-                  </p>
-
-                  <hr className="my-4" />
-                </div>
-              </div>
-
-
-              {/* OBJECTIVE */}
-              {form.objective && (
-                <div>
-                  <h3 className="font-semibold uppercase text-sm tracking-wide">
-                    Career Objective
-                  </h3>
-                  <p className="text-sm text-gray-700 mt-2 leading-relaxed">
-                    {form.objective}
-                  </p>
+              {!isPaid && (
+                <div className="absolute inset-0 flex items-center justify-center text-2xl sm:text-4xl text-gray-200 font-bold rotate-[-30deg] pointer-events-none z-10">
+                  FRESHERSPRO PREVIEW
                 </div>
               )}
 
-              {/* EXPERIENCE */}
-              {form.experience && (
-                <div>
-                  <h3 className="font-semibold uppercase text-sm tracking-wide">
-                    Experience
-                  </h3>
-                  <p className="text-sm text-gray-700 mt-2 leading-relaxed">
-                    {form.experience}
-                  </p>
-                </div>
-              )}
-
-              {/* EDUCATION */}
-              {education.some(
-                (edu) => edu.degree || edu.college || edu.year
-              ) && (
+              {/* A4 Resume Container */}
+              <div
+                id="resume-preview"
+                className="bg-white shadow-lg relative z-0 w-full"
+                style={{
+                  maxWidth: "794px",
+                  minHeight: "1123px",
+                  padding: "clamp(16px, 4vw, 40px)",
+                  boxSizing: "border-box",
+                }}
+              >
+                <div className="space-y-6">
                   <div>
-                    <h3 className="font-semibold uppercase text-sm tracking-wide">
-                      Education
-                    </h3>
-                    <div className="mt-2 space-y-1">
-                      {education.map((edu, i) => (
-                        <p key={i} className="text-sm text-gray-700">
-                          {edu.degree && <strong>{edu.degree}</strong>}
-                          {edu.college && ` – ${edu.college}`}
-                          {edu.year && ` (${edu.year})`}
-                        </p>
-                      ))}
-                    </div>
+                    <h1 className="text-3xl font-bold">
+                      {form.name || "Your Name"}
+                    </h1>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {form.email || "your@email.com"}
+                      {form.phone && ` • +91 ${form.phone}`}
+                    </p>
+                    <hr className="my-4" />
                   </div>
-                )}
 
-              {/* SKILLS */}
-              {(languages.items.length > 0 ||
-                frameworks.items.length > 0 ||
-                libraries.items.length > 0 ||
-                tools.items.length > 0 ||
-                platforms.items.length > 0) && (
-                  <div>
-                    <h3 className="font-semibold uppercase text-sm tracking-wide">
-                      Skills
-                    </h3>
-
-                    <div className="mt-2 space-y-1 text-sm text-gray-700">
-                      {languages.items.length > 0 && (
-                        <p>
-                          <strong>Languages:</strong>{" "}
-                          {languages.items.join(", ")}
-                        </p>
-                      )}
-
-                      {frameworks.items.length > 0 && (
-                        <p>
-                          <strong>Frameworks:</strong>{" "}
-                          {frameworks.items.join(", ")}
-                        </p>
-                      )}
-
-                      {libraries.items.length > 0 && (
-                        <p>
-                          <strong>Libraries:</strong>{" "}
-                          {libraries.items.join(", ")}
-                        </p>
-                      )}
-
-                      {tools.items.length > 0 && (
-                        <p>
-                          <strong>Tools:</strong>{" "}
-                          {tools.items.join(", ")}
-                        </p>
-                      )}
-
-                      {platforms.items.length > 0 && (
-                        <p>
-                          <strong>Platforms:</strong>{" "}
-                          {platforms.items.join(", ")}
-                        </p>
-                      )}
+                  {/* OBJECTIVE */}
+                  {form.objective && (
+                    <div>
+                      <h3 className="font-semibold uppercase text-sm tracking-wide">
+                        Career Objective
+                      </h3>
+                      <p className="text-sm text-gray-700 mt-2 leading-relaxed">
+                        {form.objective}
+                      </p>
                     </div>
-                  </div>
-                )}
+                  )}
 
+                  {/* EXPERIENCE */}
+                  {form.experience && (
+                    <div>
+                      <h3 className="font-semibold uppercase text-sm tracking-wide">
+                        Experience
+                      </h3>
+                      <p className="text-sm text-gray-700 mt-2 leading-relaxed">
+                        {form.experience}
+                      </p>
+                    </div>
+                  )}
 
-              {/* PROJECTS */}
-              {projects.length > 0 && (
-                <div>
-                  <h3 className="font-semibold uppercase text-sm tracking-wide">
-                    Projects
-                  </h3>
-                  <ul className="mt-2 text-sm text-gray-700 space-y-1">
-                    {projects.map((proj, i) => (
-                      <li key={i}>• {proj}</li>
-                    ))}
-                  </ul>
+                  {/* EDUCATION */}
+                  {education.some(
+                    (edu) => edu.degree || edu.college || edu.year
+                  ) && (
+                    <div>
+                      <h3 className="font-semibold uppercase text-sm tracking-wide">
+                        Education
+                      </h3>
+                      <div className="mt-2 space-y-1">
+                        {education.map((edu, i) => (
+                          <p key={i} className="text-sm text-gray-700">
+                            {edu.degree && <strong>{edu.degree}</strong>}
+                            {edu.college && ` – ${edu.college}`}
+                            {edu.year && ` (${edu.year})`}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SKILLS */}
+                  {(languages.items.length > 0 ||
+                    frameworks.items.length > 0 ||
+                    libraries.items.length > 0 ||
+                    tools.items.length > 0 ||
+                    platforms.items.length > 0) && (
+                    <div>
+                      <h3 className="font-semibold uppercase text-sm tracking-wide">
+                        Skills
+                      </h3>
+                      <div className="mt-2 space-y-1 text-sm text-gray-700">
+                        {languages.items.length > 0 && (
+                          <p><strong>Languages:</strong> {languages.items.join(", ")}</p>
+                        )}
+                        {frameworks.items.length > 0 && (
+                          <p><strong>Frameworks:</strong> {frameworks.items.join(", ")}</p>
+                        )}
+                        {libraries.items.length > 0 && (
+                          <p><strong>Libraries:</strong> {libraries.items.join(", ")}</p>
+                        )}
+                        {tools.items.length > 0 && (
+                          <p><strong>Tools:</strong> {tools.items.join(", ")}</p>
+                        )}
+                        {platforms.items.length > 0 && (
+                          <p><strong>Platforms:</strong> {platforms.items.join(", ")}</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* PROJECTS */}
+                  {projects.length > 0 && (
+                    <div>
+                      <h3 className="font-semibold uppercase text-sm tracking-wide">
+                        Projects
+                      </h3>
+                      <ul className="mt-2 text-sm text-gray-700 space-y-1">
+                        {projects.map((proj, i) => (
+                          <li key={i}>• {proj}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* CERTIFICATIONS */}
+                  {certs.length > 0 && (
+                    <div>
+                      <h3 className="font-semibold uppercase text-sm tracking-wide">
+                        Certifications
+                      </h3>
+                      <ul className="mt-2 text-sm text-gray-700 space-y-1">
+                        {certs.map((c, i) => (
+                          <li key={i}>• {c}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* ACHIEVEMENTS */}
+                  {achievements.length > 0 && (
+                    <div>
+                      <h3 className="font-semibold uppercase text-sm tracking-wide">
+                        Achievements
+                      </h3>
+                      <ul className="mt-2 text-sm text-gray-700 space-y-1">
+                        {achievements.map((a, i) => (
+                          <li key={i}>• {a}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
-              )}
-
-              {/* CERTIFICATIONS */}
-              {certs.length > 0 && (
-                <div>
-                  <h3 className="font-semibold uppercase text-sm tracking-wide">
-                    Certifications
-                  </h3>
-                  <ul className="mt-2 text-sm text-gray-700 space-y-1">
-                    {certs.map((c, i) => (
-                      <li key={i}>• {c}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              </div>
             </div>
 
-            {/* ACHIEVEMENTS */}
-            {achievements.length > 0 && (
-              <div>
-                <h3 className="font-semibold uppercase text-sm tracking-wide">
-                  Achievements
-                </h3>
-                <ul className="mt-2 text-sm text-gray-700 space-y-1">
-                  {achievements.map((a, i) => (
-                    <li key={i}>• {a}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Payment Section */}
-            <div className="mt-10 border-t pt-6">
+            {/* Payment Section - Always below preview */}
+            <div className="w-full mt-4 sm:mt-5 lg:mt-6 px-2 sm:px-6" style={{ maxWidth: "794px" }}>
               {!isPaid ? (
                 <Button
                   onClick={() => setIsPaid(true)}
