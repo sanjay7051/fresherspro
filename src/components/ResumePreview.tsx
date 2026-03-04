@@ -173,6 +173,37 @@ const ResumePreview = ({
         </>
       )}
 
+      {/* SKILLS */}
+
+      {(languages.length ||
+        frameworks.length ||
+        tools.length ||
+        communication.length) > 0 && (
+
+          <div style={{ marginTop: "16px" }}>
+
+            <h2>Skills</h2>
+
+            {languages.length > 0 && (
+              <p><strong>Languages:</strong> {languages.join(", ")}</p>
+            )}
+
+            {frameworks.length > 0 && (
+              <p><strong>Frameworks:</strong> {frameworks.join(", ")}</p>
+            )}
+
+            {tools.length > 0 && (
+              <p><strong>Tools:</strong> {tools.join(", ")}</p>
+            )}
+
+            {communication.length > 0 && (
+              <p><strong>Communication:</strong> {communication.join(", ")}</p>
+            )}
+
+          </div>
+
+        )}
+
       {/* PROJECTS */}
       {projectBullets.length > 0 && (
         <>
