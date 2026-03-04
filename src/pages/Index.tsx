@@ -81,7 +81,7 @@ const HowItWorks = () => {
 
   return (
     <section className="section-alt py-20" id="how-it-works">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-[1200px] mx-auto px-6">
         <h2 className="text-center text-3xl font-bold text-foreground md:text-4xl">
           How It Works
         </h2>

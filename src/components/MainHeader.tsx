@@ -5,7 +5,7 @@ const MainHeader = () => {
     return (
         <header className="sticky top-0 z-50 border-b bg-white/90 backdrop-blur-md">
 
-            <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between">
 
                 {/* Logo */}
                 <Link to="/" className="flex items-center gap-3">
