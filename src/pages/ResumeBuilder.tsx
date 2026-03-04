@@ -237,7 +237,7 @@ const ResumeBuilder = () => {
       {/* FIXED PAGE SPACING */}
       <div className="min-h-screen bg-gray-50 py-10 px-6 overflow-x-hidden">
         {/* WIDER DESKTOP CONTAINER */}
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">          {/* FORM */}
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-12">
           <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-10 space-y-10">
 
             <h2 className="text-3xl font-bold">Resume Details</h2>

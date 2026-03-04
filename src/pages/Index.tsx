@@ -21,13 +21,12 @@ const HeroSection = () => {
         className="absolute inset-0"
         style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
       />
-      <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
-        <h1
-          className="font-extrabold tracking-tight text-white"
-          style={{ fontSize: "clamp(2.25rem, 5vw, 3.5rem)", lineHeight: 1.15 }}
-        >
-          Build a Resume That Gets You Hired.
-        </h1>
+      <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">        <h1
+        className="font-extrabold tracking-tight text-white"
+        style={{ fontSize: "clamp(2.25rem, 5vw, 3.5rem)", lineHeight: 1.15 }}
+      >
+        Build a Resume That Gets You Hired.
+      </h1>
         <p
           className="mx-auto mt-5 max-w-xl font-medium text-white/80"
           style={{ fontSize: "clamp(1rem, 2vw, 1.25rem)" }}
@@ -82,7 +81,7 @@ const HowItWorks = () => {
 
   return (
     <section className="section-alt py-20" id="how-it-works">
-      <div className="container mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-6">
         <h2 className="text-center text-3xl font-bold text-foreground md:text-4xl">
           How It Works
         </h2>
@@ -114,7 +113,7 @@ const HowItWorks = () => {
 const PricingSection = () => {
   return (
     <section className="py-20 bg-background" id="pricing">
-      <div className="container mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-6">
         <h2 className="text-center text-3xl font-bold text-foreground md:text-4xl">
           Simple Pricing
         </h2>
