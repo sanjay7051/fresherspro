@@ -1,9 +1,9 @@
-import { useState } from "react";
 import html2pdf from "html2pdf.js";
 import { Plus, X } from "lucide-react";
 import MainHeader from "@/components/MainHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import React, { useState, useRef } from "react";
 
 interface Education {
   degree: string;
@@ -76,6 +76,8 @@ function capitalizeInstitution(name: string): string {
 /* ================= COMPONENT ================= */
 
 const ResumeBuilder = () => {
+
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const [isPaid, setIsPaid] = useState(false);
   const [languages, setLanguages] = useState<string[]>([]);
@@ -717,59 +719,35 @@ const ResumeBuilder = () => {
                 </div>
               )}
 
-              {/* A4 RESUME */}
-              <div
-                id="resume-preview"
-                className="bg-white shadow-lg relative z-0 w-full"
-                style={{
-                  maxWidth: "794px",
-                  minHeight: "1123px",
-                  padding: "clamp(16px, 4vw, 40px)",
-                  boxSizing: "border-box",
+              {/* Resume Preview Component */}
+              <ResumePreview
+                data={{
+                  fullName: form.name,
+                  phone: form.phone,
+                  email: form.email,
+                  linkedin: form.linkedin,
+                  github: form.github,
+
+                  degree: education[0]?.degree || "",
+                  college: education[0]?.college || "",
+                  year: education[0]?.year || "",
+
+                  programmingLanguages: languages.join(", "),
+                  frameworksLibraries: frameworks.join(", "),
+                  toolsPlatforms: tools.join(", "),
+                  databases: "",
+
+                  softSkills: communication.join(", "),
+
+                  experience: form.experience,
+                  projects: projects.join("\n"),
+                  certifications: certs.join("\n"),
+
+                  careerObjective: form.objective
                 }}
-              >
-                <div style={{ textAlign: "center", marginBottom: "16px" }}>
-
-                  <h1
-                    style={{
-                      fontSize: "22px",
-                      fontWeight: 700,
-                      textTransform: "uppercase",
-                      letterSpacing: "2px",
-                      margin: 0,
-                      color: "#111",
-                    }}
-                  >
-                    {form.name || "YOUR NAME"}
-                  </h1>
-
-                  {contactItems.length > 0 && (
-                    <div
-                      style={{
-                        fontSize: "12px",
-                        color: "#555",
-                        marginTop: "6px",
-                        display: "flex",
-                        flexWrap: "wrap",
-                        justifyContent: "center",
-                        lineHeight: "1.6",
-                      }}
-                    >
-                      {contactItems.map((item, i) => (
-                        <span key={i} style={{ whiteSpace: "nowrap" }}>
-                          {i > 0 && (
-                            <span style={{ margin: "0 8px", color: "#999" }}>
-                              |
-                            </span>
-                          )}
-                          {item}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-              </div>
+                isPaid={isPaid}
+                previewRef={previewRef}
+              />
 
             </div>
 
@@ -791,6 +769,7 @@ const ResumeBuilder = () => {
                   Download PDF
                 </Button>
               )}
+
 
             </div>
 
