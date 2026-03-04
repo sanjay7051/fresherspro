@@ -1,7 +1,6 @@
 import React from "react";
 import { formatText } from "@/utils/textFormatter";
 
-
 export interface ResumeData {
   fullName: string;
   phone: string;
@@ -66,30 +65,24 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
   </h2>
 );
 
-const ResumePreview = ({
-  data,
-  isPaid,
-  previewRef,
-}: {
+interface Props {
   data: ResumeData;
   isPaid: boolean;
-  previewRef: React.RefObject<HTMLDivElement>;
-}) => {
+}
+
+const ResumePreview: React.FC<Props> = ({ data, isPaid }) => {
   const experienceBullets = parseBullets(data.experience);
   const projectBullets = parseBullets(data.projects);
   const certBullets = parseBullets(data.certifications);
 
   return (
     <div
-      ref={previewRef}
       style={{
         background: "#fff",
         color: "#222",
         fontFamily: "'Times New Roman', 'Georgia', serif",
-        width: "794px",
+        width: "100%",
         margin: "0 auto",
-        padding: "48px 56px",
-        boxSizing: "border-box",
         lineHeight: "1.5",
         fontSize: "13.5px",
         position: "relative",
@@ -152,7 +145,7 @@ const ResumePreview = ({
         {data.github && <span> | {data.github}</span>}
       </div>
 
-      {/* PROFESSIONAL SUMMARY */}
+      {/* SUMMARY */}
       {data.careerObjective && (
         <>
           <SectionTitle>Professional Summary</SectionTitle>
@@ -168,7 +161,7 @@ const ResumePreview = ({
           <SectionTitle>Experience</SectionTitle>
           <ul style={{ paddingLeft: "18px", margin: 0 }}>
             {experienceBullets.map((item, i) => (
-              <li key={i} style={{ marginBottom: "5px", lineHeight: "1.5", color: "#333" }}>
+              <li key={i} style={{ marginBottom: "5px", color: "#333" }}>
                 {item}
               </li>
             ))}
@@ -223,7 +216,7 @@ const ResumePreview = ({
           <SectionTitle>Projects</SectionTitle>
           <ul style={{ paddingLeft: "18px", margin: 0 }}>
             {projectBullets.map((item, i) => (
-              <li key={i} style={{ marginBottom: "5px", lineHeight: "1.5", color: "#333" }}>
+              <li key={i} style={{ marginBottom: "5px", color: "#333" }}>
                 {item}
               </li>
             ))}
@@ -249,7 +242,7 @@ const ResumePreview = ({
           <SectionTitle>Certifications</SectionTitle>
           <ul style={{ paddingLeft: "18px", margin: 0 }}>
             {certBullets.map((item, i) => (
-              <li key={i} style={{ marginBottom: "4px", lineHeight: "1.5", color: "#333" }}>
+              <li key={i} style={{ marginBottom: "4px", color: "#333" }}>
                 {formatText(item)}
               </li>
             ))}
