@@ -155,11 +155,13 @@ const ResumePreview = ({
       {data.careerObjective && (
         <>
           <SectionTitle>Professional Summary</SectionTitle>
-          <p style={{ margin: 0, lineHeight: "1.55", color: "#333" }}>{data.careerObjective}</p>
+          <p style={{ margin: 0, lineHeight: "1.55", color: "#333" }}>
+            {data.careerObjective}
+          </p>
         </>
       )}
 
-      {/* EXPERIENCE (After Summary as requested) */}
+      {/* EXPERIENCE */}
       {experienceBullets.length > 0 && (
         <>
           <SectionTitle>Experience</SectionTitle>
@@ -174,39 +176,41 @@ const ResumePreview = ({
       )}
 
       {/* SKILLS */}
-
       {(data.programmingLanguages ||
         data.frameworksLibraries ||
         data.toolsPlatforms ||
+        data.databases ||
         data.softSkills) && (
           <>
             <SectionTitle>Skills</SectionTitle>
 
             {data.programmingLanguages && (
-              <div style={{ marginBottom: "3px", color: "#333" }}>
-                <strong style={{ color: "#111" }}>Languages:</strong>{" "}
-                {data.programmingLanguages}
+              <div>
+                <strong>Languages:</strong> {data.programmingLanguages}
               </div>
             )}
 
             {data.frameworksLibraries && (
-              <div style={{ marginBottom: "3px", color: "#333" }}>
-                <strong style={{ color: "#111" }}>Frameworks:</strong>{" "}
-                {data.frameworksLibraries}
+              <div>
+                <strong>Frameworks:</strong> {data.frameworksLibraries}
               </div>
             )}
 
             {data.toolsPlatforms && (
-              <div style={{ marginBottom: "3px", color: "#333" }}>
-                <strong style={{ color: "#111" }}>Tools:</strong>{" "}
-                {data.toolsPlatforms}
+              <div>
+                <strong>Tools:</strong> {data.toolsPlatforms}
+              </div>
+            )}
+
+            {data.databases && (
+              <div>
+                <strong>Databases:</strong> {data.databases}
               </div>
             )}
 
             {data.softSkills && (
-              <div style={{ marginBottom: "3px", color: "#333" }}>
-                <strong style={{ color: "#111" }}>Communication:</strong>{" "}
-                {data.softSkills}
+              <div>
+                <strong>Communication:</strong> {data.softSkills}
               </div>
             )}
           </>
@@ -225,50 +229,6 @@ const ResumePreview = ({
           </ul>
         </>
       )}
-
-      {/* TECHNICAL SKILLS */}
-      {(data.programmingLanguages ||
-        data.frameworksLibraries ||
-        data.toolsPlatforms ||
-        data.databases ||
-        data.softSkills) && (
-          <>
-            <SectionTitle>Technical Skills</SectionTitle>
-
-            {data.programmingLanguages && (
-              <div style={{ marginBottom: "3px", color: "#333" }}>
-                <strong style={{ color: "#111" }}>Programming Languages:</strong>{" "}
-                {data.programmingLanguages}
-              </div>
-            )}
-
-            {data.frameworksLibraries && (
-              <div style={{ marginBottom: "3px", color: "#333" }}>
-                <strong style={{ color: "#111" }}>Frameworks & Libraries:</strong>{" "}
-                {data.frameworksLibraries}
-              </div>
-            )}
-
-            {data.toolsPlatforms && (
-              <div style={{ marginBottom: "3px", color: "#333" }}>
-                <strong style={{ color: "#111" }}>Tools & Platforms:</strong>{" "}
-                {data.toolsPlatforms}
-              </div>
-            )}
-
-            {data.databases && (
-              <div style={{ marginBottom: "3px", color: "#333" }}>
-                <strong style={{ color: "#111" }}>Databases:</strong> {data.databases}
-              </div>
-            )}
-
-            {data.softSkills && (
-              <div style={{ marginBottom: "3px", color: "#333" }}>
-                <strong style={{ color: "#111" }}>Soft Skills:</strong> {data.softSkills}
-              </div>
-            )}
-          </>
-        )}
 
       {/* EDUCATION */}
       {(data.degree || data.college) && (
