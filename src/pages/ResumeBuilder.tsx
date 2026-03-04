@@ -11,24 +11,125 @@ interface Education {
   year: string;
 }
 
-const ACTION_VERBS = [
-  "Developed", "Engineered", "Designed", "Built", "Implemented",
-  "Architected", "Optimized", "Deployed", "Integrated", "Automated",
+/* ================= SPELLING & FORMATTING HELPERS ================= */
+
+const TECH_TERMS: Record<string, string> = {
+  "javascript": "JavaScript", "typescript": "TypeScript", "python": "Python",
+  "java": "Java", "react": "React", "reactjs": "React", "react js": "React",
+  "nodejs": "Node.js", "node js": "Node.js", "node.js": "Node.js",
+  "nextjs": "Next.js", "next js": "Next.js", "next.js": "Next.js",
+  "vuejs": "Vue.js", "vue js": "Vue.js", "angular": "Angular",
+  "firebase": "Firebase", "mongodb": "MongoDB", "mysql": "MySQL",
+  "postgresql": "PostgreSQL", "postgres": "PostgreSQL",
+  "github": "GitHub", "git hub": "GitHub", "gitlab": "GitLab",
+  "docker": "Docker", "kubernetes": "Kubernetes", "aws": "AWS",
+  "azure": "Azure", "gcp": "GCP", "html": "HTML", "css": "CSS",
+  "sass": "SASS", "tailwind": "Tailwind CSS", "bootstrap": "Bootstrap",
+  "redux": "Redux", "graphql": "GraphQL", "restful": "RESTful",
+  "sql": "SQL", "nosql": "NoSQL", "linux": "Linux", "django": "Django",
+  "flask": "Flask", "spring boot": "Spring Boot", "springboot": "Spring Boot",
+  "express": "Express.js", "expressjs": "Express.js",
+  "flutter": "Flutter", "dart": "Dart", "kotlin": "Kotlin", "swift": "Swift",
+  "tensorflow": "TensorFlow", "pytorch": "PyTorch", "opencv": "OpenCV",
+  "hadoop": "Hadoop", "spark": "Spark", "kafka": "Kafka",
+  "jenkins": "Jenkins", "terraform": "Terraform", "ansible": "Ansible",
+  "figma": "Figma", "jira": "Jira", "vs code": "VS Code", "vscode": "VS Code",
+  "api": "API", "apis": "APIs", "ui": "UI", "ux": "UX",
+  "mern": "MERN", "mean": "MEAN", "devops": "DevOps",
+  "hackothon": "Hackathon", "hackathon": "Hackathon",
+  "aws certified": "AWS Certified", "c++": "C++", "c#": "C#",
+  "php": "PHP", "ruby": "Ruby", "golang": "Go", "rust": "Rust",
+  "sslc": "SSLC", "puc": "PUC", "cbse": "CBSE", "icse": "ICSE",
+};
+
+function fixSpellingAndCase(text: string): string {
+  if (!text.trim()) return text;
+  let result = text;
+
+  // Fix tech terms (case-insensitive replacement)
+  const sortedTerms = Object.entries(TECH_TERMS).sort((a, b) => b[0].length - a[0].length);
+  for (const [lower, correct] of sortedTerms) {
+    const regex = new RegExp(`\\b${lower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi');
+    result = result.replace(regex, correct);
+  }
+
+  return result;
+}
+
+function toSentenceCase(text: string): string {
+  if (!text.trim()) return text;
+  // Split into sentences, capitalize first letter of each
+  return text.replace(/(^|\.\s+)([a-z])/g, (_, sep, char) => sep + char.toUpperCase());
+}
+
+function capitalizeInstitution(name: string): string {
+  if (!name.trim()) return name;
+  // Capitalize each word, fix tech terms
+  let result = name.replace(/\b\w+/g, (word) => {
+    const lower = word.toLowerCase();
+    if (["of", "the", "and", "in", "at", "for", "to", "a", "an"].includes(lower)) return lower;
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  });
+  // Fix first word always capitalized
+  result = result.charAt(0).toUpperCase() + result.slice(1);
+  return fixSpellingAndCase(result);
+}
+
+/* ================= EDUCATION FORMATTING ================= */
+
+const EDUCATION_MAP: Record<string, string> = {
+  "10th": "Secondary School (SSLC)",
+  "10": "Secondary School (SSLC)",
+  "sslc": "Secondary School (SSLC)",
+  "10th standard": "Secondary School (SSLC)",
+  "10th std": "Secondary School (SSLC)",
+  "xth": "Secondary School (SSLC)",
+  "x": "Secondary School (SSLC)",
+  "high school": "Secondary School (SSLC)",
+  "highschool": "Secondary School (SSLC)",
+  "12th": "Higher Secondary (PUC/HSC)",
+  "12": "Higher Secondary (PUC/HSC)",
+  "12th standard": "Higher Secondary (PUC/HSC)",
+  "12th std": "Higher Secondary (PUC/HSC)",
+  "xiith": "Higher Secondary (PUC/HSC)",
+  "xii": "Higher Secondary (PUC/HSC)",
+  "hsc": "Higher Secondary (HSC)",
+  "2nd puc": "Pre-University Course (PUC)",
+  "2nd pu": "Pre-University Course (PUC)",
+  "puc": "Pre-University Course (PUC)",
+  "pu": "Pre-University Course (PUC)",
+  "1st puc": "Pre-University Course (1st PUC)",
+  "intermediate": "Intermediate",
+  "diploma": "Diploma",
+};
+
+function formatDegree(degree: string): string {
+  const trimmed = degree.trim();
+  const lower = trimmed.toLowerCase();
+  if (EDUCATION_MAP[lower]) return EDUCATION_MAP[lower];
+  // Already formal (B.Tech, M.Sc, etc.) — just fix spelling
+  return fixSpellingAndCase(trimmed);
+}
+
+/* ================= PROJECT DESCRIPTION GENERATOR ================= */
+
+const PROJECT_TEMPLATES = [
+  (name: string) => `Built a scalable ${name} application using modern web technologies with optimized architecture, responsive UI, and seamless API integrations for improved user experience.`,
+  (name: string) => `Developed ${name} with clean architecture and efficient data handling, delivering a production-ready solution with intuitive design and robust performance.`,
+  (name: string) => `Engineered ${name} leveraging industry-standard frameworks and best practices, ensuring scalable infrastructure and streamlined workflows for end users.`,
+  (name: string) => `Designed and implemented ${name} with focus on real-time data processing, clean code architecture, and optimized backend services for enhanced reliability.`,
+  (name: string) => `Created ${name} featuring modern UI components, efficient state management, and RESTful API integration to deliver a seamless and performant application.`,
+  (name: string) => `Architected ${name} with responsive design principles and modular codebase, enabling maintainable development and superior cross-platform compatibility.`,
 ];
 
-function generateProjectBullets(projectName: string): string[] {
+function generateProjectDescription(projectName: string): string {
   const name = projectName.trim();
   const hash = name.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
-  const v1 = ACTION_VERBS[hash % ACTION_VERBS.length];
-  const v2 = ACTION_VERBS[(hash + 3) % ACTION_VERBS.length];
-  const v3 = ACTION_VERBS[(hash + 7) % ACTION_VERBS.length];
-
-  return [
-    `${v1} ${name} with modern tech stack ensuring scalable architecture and clean code practices.`,
-    `${v2} responsive UI components and RESTful API integration for seamless user experience.`,
-    `${v3} application for production deployment with optimized performance and error handling.`,
-  ];
+  const template = PROJECT_TEMPLATES[hash % PROJECT_TEMPLATES.length];
+  return template(name);
 }
+
+/* ================= COMPONENT ================= */
 
 const ResumeBuilder = () => {
   const [isPaid, setIsPaid] = useState(false);
@@ -39,6 +140,7 @@ const ResumeBuilder = () => {
     phone: "",
     linkedin: "",
     github: "",
+    location: "",
     objective: "",
     experience: "",
   });
@@ -98,7 +200,7 @@ const ResumeBuilder = () => {
 
     const addItem = () => {
       if (input.trim()) {
-        setItems([...items, input.trim()]);
+        setItems([...items, fixSpellingAndCase(input.trim())]);
         setInput("");
       }
     };
@@ -119,7 +221,7 @@ const ResumeBuilder = () => {
 
   const addProject = () => {
     if (projectInput.trim()) {
-      setProjects([...projects, projectInput.trim()]);
+      setProjects([...projects, fixSpellingAndCase(projectInput.trim())]);
       setProjectInput("");
     }
   };
@@ -131,7 +233,7 @@ const ResumeBuilder = () => {
 
   const addCert = () => {
     if (certInput.trim()) {
-      setCerts([...certs, certInput.trim()]);
+      setCerts([...certs, fixSpellingAndCase(certInput.trim())]);
       setCertInput("");
     }
   };
@@ -143,7 +245,7 @@ const ResumeBuilder = () => {
 
   const addAchievement = () => {
     if (achievementInput.trim()) {
-      setAchievements([...achievements, achievementInput.trim()]);
+      setAchievements([...achievements, fixSpellingAndCase(achievementInput.trim())]);
       setAchievementInput("");
     }
   };
@@ -169,57 +271,42 @@ const ResumeBuilder = () => {
   };
 
   const enhanceResume = () => {
-    const capitalizeWords = (text: string) =>
-      text.replace(/\b\w/g, (char) => char.toUpperCase());
-
-    const basicSpellFix = (text: string) => {
-      return text
-        .replace(/java script/gi, "JavaScript")
-        .replace(/react js/gi, "React")
-        .replace(/node js/gi, "Node.js")
-        .replace(/git hub/gi, "GitHub")
-        .replace(/aws certified/gi, "AWS Certified")
-        .replace(/hackothon/gi, "Hackathon");
-    };
-
     const isFresher =
       form.experience.trim().toLowerCase() === "fresher" ||
       form.experience.trim() === "";
 
     let enhancedObjective =
-      "Detail-Oriented And Highly Motivated Professional With Strong Technical Foundations. Seeking An Opportunity To Contribute Skills, Drive Innovation, And Deliver High-Impact Solutions In A Growth-Oriented Organization.";
+      "Detail-oriented and highly motivated professional with strong technical foundations. Seeking an opportunity to contribute skills, drive innovation, and deliver high-impact solutions in a growth-oriented organization.";
 
     let enhancedExperience = "";
 
     if (isFresher) {
       enhancedExperience =
-        "Fresher With Strong Academic Background And Hands-On Project Experience. Demonstrated Ability To Build Scalable Applications And Collaborate Effectively In Team Environments.";
+        "Fresher with strong academic background and hands-on project experience. Demonstrated ability to build scalable applications and collaborate effectively in team environments.";
     } else {
       enhancedExperience =
-        "Experienced Professional With Proven Expertise In Delivering High-Quality Software Solutions. Skilled In Problem-Solving, Team Collaboration, And Optimizing Application Performance.";
+        "Experienced professional with proven expertise in delivering high-quality software solutions. Skilled in problem-solving, team collaboration, and optimizing application performance.";
     }
-
-    const formattedProjects =
-      projects.length === 0
-        ? [
-          "Developed A Full-Stack Web Application Using Modern Technologies And Optimized Performance For Scalability.",
-          "Designed And Implemented Responsive UI With Clean Architecture And Best Coding Practices.",
-        ]
-        : projects.map((p) => capitalizeWords(basicSpellFix(p)));
 
     setForm({
       ...form,
-      objective: capitalizeWords(basicSpellFix(enhancedObjective)),
-      experience: capitalizeWords(basicSpellFix(enhancedExperience)),
+      objective: enhancedObjective,
+      experience: enhancedExperience,
     });
 
-    setProjects(formattedProjects);
-
-    setCerts(certs.map((c) => capitalizeWords(basicSpellFix(c))));
-    setAchievements(
-      achievements.map((a) => capitalizeWords(basicSpellFix(a)))
-    );
+    setProjects(projects.map((p) => fixSpellingAndCase(p)));
+    setCerts(certs.map((c) => fixSpellingAndCase(c)));
+    setAchievements(achievements.map((a) => fixSpellingAndCase(a)));
   };
+
+  /* ================= PREVIEW HELPERS ================= */
+
+  const contactItems: string[] = [];
+  if (form.phone) contactItems.push(`+91 ${form.phone}`);
+  if (form.email) contactItems.push(form.email);
+  if (form.linkedin) contactItems.push(form.linkedin);
+  if (form.github) contactItems.push(form.github);
+  if (form.location) contactItems.push(form.location);
 
   return (
     <>
@@ -298,6 +385,15 @@ const ResumeBuilder = () => {
                   onChange={(e) => handleChange("github", e.target.value)}
                 />
               </div>
+
+              <div>
+                <label>Location</label>
+                <Input
+                  placeholder="Bangalore, India"
+                  value={form.location}
+                  onChange={(e) => handleChange("location", e.target.value)}
+                />
+              </div>
             </div>
 
             {/* OBJECTIVE */}
@@ -319,14 +415,14 @@ const ResumeBuilder = () => {
               {education.map((edu, index) => (
                 <div key={index} className="flex gap-4 mb-3 items-center">
                   <Input
-                    placeholder="B.Tech CSE"
+                    placeholder="B.Tech CSE / 10th / PUC"
                     value={edu.degree}
                     onChange={(e) =>
                       handleEducationChange(index, "degree", e.target.value)
                     }
                   />
                   <Input
-                    placeholder="VTU"
+                    placeholder="Institution Name"
                     value={edu.college}
                     onChange={(e) =>
                       handleEducationChange(index, "college", e.target.value)
@@ -547,24 +643,25 @@ const ResumeBuilder = () => {
                     }}>
                       {form.name || "YOUR NAME"}
                     </h1>
-                    <div style={{
-                      fontSize: "12px",
-                      color: "#555",
-                      marginTop: "6px",
-                      display: "flex",
-                      flexWrap: "wrap",
-                      justifyContent: "center",
-                      gap: "6px 14px",
-                    }}>
-                      {form.phone && <span>+91 {form.phone}</span>}
-                      {form.email && <span>{form.email}</span>}
-                      {form.linkedin && (
-                        <span>{form.linkedin}</span>
-                      )}
-                      {form.github && (
-                        <span>{form.github}</span>
-                      )}
-                    </div>
+                    {contactItems.length > 0 && (
+                      <div style={{
+                        fontSize: "12px",
+                        color: "#555",
+                        marginTop: "6px",
+                        display: "flex",
+                        flexWrap: "wrap",
+                        justifyContent: "center",
+                        gap: "0",
+                        lineHeight: "1.6",
+                      }}>
+                        {contactItems.map((item, i) => (
+                          <span key={i} style={{ whiteSpace: "nowrap" }}>
+                            {i > 0 && <span style={{ margin: "0 8px", color: "#999" }}>|</span>}
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {/* CAREER OBJECTIVE */}
@@ -575,7 +672,7 @@ const ResumeBuilder = () => {
                         CAREER OBJECTIVE
                       </h3>
                       <p style={{ fontSize: "12.5px", color: "#444", lineHeight: "1.6", margin: 0 }}>
-                        {form.objective}
+                        {toSentenceCase(fixSpellingAndCase(form.objective))}
                       </p>
                     </div>
                   )}
@@ -588,7 +685,7 @@ const ResumeBuilder = () => {
                         EXPERIENCE
                       </h3>
                       <p style={{ fontSize: "12.5px", color: "#444", lineHeight: "1.6", margin: 0 }}>
-                        {form.experience}
+                        {toSentenceCase(fixSpellingAndCase(form.experience))}
                       </p>
                     </div>
                   )}
@@ -601,13 +698,17 @@ const ResumeBuilder = () => {
                         EDUCATION
                       </h3>
                       <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                        {education.map((edu, i) => (
-                          <p key={i} style={{ fontSize: "12.5px", color: "#444", margin: 0 }}>
-                            {edu.degree && <strong>{edu.degree}</strong>}
-                            {edu.college && ` – ${edu.college}`}
-                            {edu.year && ` (${edu.year})`}
-                          </p>
-                        ))}
+                        {education.map((edu, i) => {
+                          const formattedDegree = formatDegree(edu.degree);
+                          const formattedCollege = capitalizeInstitution(edu.college);
+                          return (
+                            <p key={i} style={{ fontSize: "12.5px", color: "#444", margin: 0 }}>
+                              {formattedDegree && <strong>{formattedDegree}</strong>}
+                              {formattedCollege && ` — ${formattedCollege}`}
+                              {edu.year && ` (${edu.year})`}
+                            </p>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -652,27 +753,22 @@ const ResumeBuilder = () => {
                     </div>
                   )}
 
-                  {/* PROJECTS - With AI-style bullets */}
+                  {/* PROJECTS - Professional paragraph format */}
                   {projects.length > 0 && (
                     <div>
                       <div style={{ borderTop: "1px solid #d1d5db", marginTop: "24px", marginBottom: "16px" }} />
                       <h3 style={{ fontWeight: 600, textTransform: "uppercase", fontSize: "13px", letterSpacing: "1.5px", color: "#222", margin: "0 0 10px" }}>
                         PROJECTS
                       </h3>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                        {projects.map((proj, i) => {
-                          const bullets = generateProjectBullets(proj);
-                          return (
-                            <div key={i}>
-                              <strong style={{ fontSize: "13px", color: "#222" }}>{proj}</strong>
-                              <ul style={{ paddingLeft: "16px", margin: "4px 0 0", listStyleType: "disc" }}>
-                                {bullets.map((b, bi) => (
-                                  <li key={bi} style={{ fontSize: "12px", color: "#555", lineHeight: "1.55", marginBottom: "2px" }}>{b}</li>
-                                ))}
-                              </ul>
-                            </div>
-                          );
-                        })}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                        {projects.map((proj, i) => (
+                          <div key={i}>
+                            <strong style={{ fontSize: "13px", color: "#222" }}>{proj}</strong>
+                            <p style={{ fontSize: "12px", color: "#555", lineHeight: "1.6", margin: "3px 0 0", textAlign: "justify" }}>
+                              {generateProjectDescription(proj)}
+                            </p>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}
@@ -737,5 +833,3 @@ const ResumeBuilder = () => {
 
 // 📌 THIS LINE IS REQUIRED 👇
 export default ResumeBuilder;
-
-
