@@ -205,6 +205,31 @@ const ResumeBuilder = () => {
   if (form.github) contactItems.push(form.github);
   if (form.location) contactItems.push(form.location);
 
+  const enhanceResume = () => {
+    const isFresher =
+      form.experience.trim().toLowerCase() === "fresher" ||
+      form.experience.trim() === "";
+
+    let enhancedObjective =
+      "Detail-oriented and highly motivated professional with strong technical foundations seeking an opportunity to contribute skills and deliver high-impact solutions.";
+
+    let enhancedExperience = "";
+
+    if (isFresher) {
+      enhancedExperience =
+        "Fresher with strong academic background and hands-on project experience. Demonstrated ability to build scalable applications and collaborate effectively in team environments.";
+    } else {
+      enhancedExperience =
+        "Experienced professional with expertise in delivering high-quality software solutions, optimizing performance, and collaborating effectively with cross-functional teams.";
+    }
+
+    setForm({
+      ...form,
+      objective: enhancedObjective,
+      experience: enhancedExperience,
+    });
+  };
+
   return (
     <>
       <MainHeader />
@@ -331,6 +356,131 @@ const ResumeBuilder = () => {
                 onChange={(e) => handleChange("experience", e.target.value)}
               />
             </div>
+            {/* PROJECTS */}
+            <div>
+              <h3 className="font-semibold text-lg">Projects</h3>
+
+              <div className="flex gap-3">
+                <Input
+                  value={projectInput}
+                  placeholder="E-commerce Website using MERN"
+                  onChange={(e) => setProjectInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addProject();
+                    }
+                  }}
+                />
+
+                <Button size="sm" onClick={addProject}>
+                  Add
+                </Button>
+              </div>
+
+              <ul className="mt-2 text-sm space-y-1">
+                {projects.map((proj, i) => (
+                  <li key={i} className="flex items-center justify-between">
+                    <span>• {proj}</span>
+
+                    <button
+                      onClick={() =>
+                        setProjects(projects.filter((_, idx) => idx !== i))
+                      }
+                      className="text-xs bg-red-100 hover:bg-red-200 text-red-600 rounded-full ml-2 px-1.5 py-0.5"
+                    >
+                      ✕
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* CERTIFICATIONS */}
+            <div>
+              <h3 className="font-semibold text-lg">Certifications</h3>
+
+              <div className="flex gap-3">
+                <Input
+                  value={certInput}
+                  placeholder="AWS Certified Cloud Practitioner"
+                  onChange={(e) => setCertInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addCert();
+                    }
+                  }}
+                />
+
+                <Button size="sm" onClick={addCert}>
+                  Add
+                </Button>
+              </div>
+
+              <ul className="mt-2 text-sm space-y-1">
+                {certs.map((c, i) => (
+                  <li key={i} className="flex items-center justify-between">
+                    <span>• {c}</span>
+
+                    <button
+                      onClick={() =>
+                        setCerts(certs.filter((_, idx) => idx !== i))
+                      }
+                      className="text-xs bg-red-100 hover:bg-red-200 text-red-600 rounded-full ml-2 px-1.5 py-0.5"
+                    >
+                      ✕
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* ACHIEVEMENTS */}
+            <div>
+              <h3 className="font-semibold text-lg">Achievements</h3>
+
+              <div className="flex gap-3">
+                <Input
+                  value={achievementInput}
+                  placeholder="Won 1st Prize in Hackathon 2024"
+                  onChange={(e) => setAchievementInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addAchievement();
+                    }
+                  }}
+                />
+
+                <Button size="sm" onClick={addAchievement}>
+                  Add
+                </Button>
+              </div>
+
+              <ul className="mt-2 text-sm space-y-1">
+                {achievements.map((a, i) => (
+                  <li key={i} className="flex items-center justify-between">
+                    <span>• {a}</span>
+
+                    <button
+                      onClick={() =>
+                        setAchievements(
+                          achievements.filter((_, idx) => idx !== i)
+                        )
+                      }
+                      className="text-xs bg-red-100 hover:bg-red-200 text-red-600 rounded-full ml-2 px-1.5 py-0.5"
+                    >
+                      ✕
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <Button className="w-full mt-4" onClick={enhanceResume}>
+              Generate Resume
+            </Button>
 
           </div>
 
