@@ -2,6 +2,9 @@ import { Link } from "react-router-dom";
 import { FileText, BarChart3, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/hero-office.jpg";
+import MainHeader from "@/components/MainHeader";
+
+
 
 const HeroSection = () => {
   return (
@@ -187,23 +190,8 @@ const Footer = () => (
 const Index = () => {
   return (
     <div className="min-h-screen">
-      {/* Navbar */}
-      <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
-        <div className="container mx-auto flex items-center justify-between px-4 py-3">
-          <Link to="/" className="text-xl font-bold text-primary">
-            FreshersPro
-          </Link>
-          <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground md:flex">
-            <a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a>
-            <a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a>
-            <Link to="/ats" className="hover:text-foreground transition-colors">ATS Checker</Link>
-          </nav>
-          <Link to="/builder">
-            <Button size="sm">Build Resume</Button>
-          </Link>
-        </div>
-      </header>
 
+      <MainHeader />
       <main>
         <HeroSection />
         <HowItWorks />
