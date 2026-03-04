@@ -397,182 +397,185 @@ const ResumeBuilder = () => {
 
               <h3 className="text-lg font-semibold">Skills</h3>
 
-              {/* Languages */}
-              <div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                <p className="font-medium mb-2">Languages</p>
+                {/* Languages */}
+                <div>
 
-                <div className="flex gap-3">
-                  <Input
-                    value={languageInput}
-                    placeholder="Python"
-                    onChange={(e) => setLanguageInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addSkill(languageInput, setLanguageInput, languages, setLanguages);
-                      }
-                    }}
-                  />
+                  <p className="font-medium mb-2">Languages</p>
 
-                  <Button size="icon" variant="outline"
-                    onClick={() => addSkill(languageInput, setLanguageInput, languages, setLanguages)}
-                  >
-                    <Plus size={16} />
-                  </Button>
+                  <div className="flex gap-3">
+                    <Input
+                      value={languageInput}
+                      placeholder="Python"
+                      onChange={(e) => setLanguageInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addSkill(languageInput, setLanguageInput, languages, setLanguages);
+                        }
+                      }}
+                    />
+
+                    <Button size="icon" variant="outline"
+                      onClick={() => addSkill(languageInput, setLanguageInput, languages, setLanguages)}
+                    >
+                      <Plus size={16} />
+                    </Button>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {languages.map((skill, i) => (
+                      <div key={i} className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-sm">
+
+                        {skill}
+
+                        <button
+                          onClick={() => removeSkill(skill, languages, setLanguages)}
+                          className="text-gray-500 hover:text-red-500"
+                        >
+                          <X size={14} />
+                        </button>
+
+                      </div>
+                    ))}
+                  </div>
+
                 </div>
 
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {languages.map((skill, i) => (
-                    <div key={i} className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-sm">
+                {/* Frameworks */}
+                <div>
 
-                      {skill}
+                  <p className="font-medium mb-2">Frameworks</p>
 
-                      <button
-                        onClick={() => removeSkill(skill, languages, setLanguages)}
-                        className="text-gray-500 hover:text-red-500"
-                      >
-                        <X size={14} />
-                      </button>
+                  <div className="flex gap-3">
+                    <Input
+                      value={frameworkInput}
+                      placeholder="React"
+                      onChange={(e) => setFrameworkInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addSkill(frameworkInput, setFrameworkInput, frameworks, setFrameworks);
+                        }
+                      }}
+                    />
 
-                    </div>
-                  ))}
+                    <Button size="icon" variant="outline"
+                      onClick={() => addSkill(frameworkInput, setFrameworkInput, frameworks, setFrameworks)}
+                    >
+                      <Plus size={16} />
+                    </Button>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {frameworks.map((skill, i) => (
+                      <div key={i} className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-sm">
+
+                        {skill}
+
+                        <button
+                          onClick={() => removeSkill(skill, frameworks, setFrameworks)}
+                          className="text-gray-500 hover:text-red-500"
+                        >
+                          <X size={14} />
+                        </button>
+
+                      </div>
+                    ))}
+                  </div>
+
+                </div>
+
+                {/* Tools */}
+                <div>
+
+                  <p className="font-medium mb-2">Tools</p>
+
+                  <div className="flex gap-3">
+                    <Input
+                      value={toolInput}
+                      placeholder="Git"
+                      onChange={(e) => setToolInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addSkill(toolInput, setToolInput, tools, setTools);
+                        }
+                      }}
+                    />
+
+                    <Button size="icon" variant="outline"
+                      onClick={() => addSkill(toolInput, setToolInput, tools, setTools)}
+                    >
+                      <Plus size={16} />
+                    </Button>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {tools.map((skill, i) => (
+                      <div key={i} className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-sm">
+
+                        {skill}
+
+                        <button
+                          onClick={() => removeSkill(skill, tools, setTools)}
+                          className="text-gray-500 hover:text-red-500"
+                        >
+                          <X size={14} />
+                        </button>
+
+                      </div>
+                    ))}
+                  </div>
+
+                </div>
+
+                {/* Communication */}
+                <div>
+
+                  <p className="font-medium mb-2">Communication</p>
+
+                  <div className="flex gap-3">
+                    <Input
+                      value={communicationInput}
+                      placeholder="Leadership"
+                      onChange={(e) => setCommunicationInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addSkill(communicationInput, setCommunicationInput, communication, setCommunication);
+                        }
+                      }}
+                    />
+
+                    <Button size="icon" variant="outline"
+                      onClick={() => addSkill(communicationInput, setCommunicationInput, communication, setCommunication)}
+                    >
+                      <Plus size={16} />
+                    </Button>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {communication.map((skill, i) => (
+                      <div key={i} className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-sm">
+
+                        {skill}
+
+                        <button
+                          onClick={() => removeSkill(skill, communication, setCommunication)}
+                          className="text-gray-500 hover:text-red-500"
+                        >
+                          <X size={14} />
+                        </button>
+
+                      </div>
+                    ))}
+                  </div>
+
                 </div>
 
               </div>
-
-              {/* Frameworks */}
-              <div>
-
-                <p className="font-medium mb-2">Frameworks</p>
-
-                <div className="flex gap-3">
-                  <Input
-                    value={frameworkInput}
-                    placeholder="React"
-                    onChange={(e) => setFrameworkInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addSkill(frameworkInput, setFrameworkInput, frameworks, setFrameworks);
-                      }
-                    }}
-                  />
-
-                  <Button size="icon" variant="outline"
-                    onClick={() => addSkill(frameworkInput, setFrameworkInput, frameworks, setFrameworks)}
-                  >
-                    <Plus size={16} />
-                  </Button>
-                </div>
-
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {frameworks.map((skill, i) => (
-                    <div key={i} className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-sm">
-
-                      {skill}
-
-                      <button
-                        onClick={() => removeSkill(skill, frameworks, setFrameworks)}
-                        className="text-gray-500 hover:text-red-500"
-                      >
-                        <X size={14} />
-                      </button>
-
-                    </div>
-                  ))}
-                </div>
-
-              </div>
-
-              {/* Tools */}
-              <div>
-
-                <p className="font-medium mb-2">Tools</p>
-
-                <div className="flex gap-3">
-                  <Input
-                    value={toolInput}
-                    placeholder="Git"
-                    onChange={(e) => setToolInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addSkill(toolInput, setToolInput, tools, setTools);
-                      }
-                    }}
-                  />
-
-                  <Button size="icon" variant="outline"
-                    onClick={() => addSkill(toolInput, setToolInput, tools, setTools)}
-                  >
-                    <Plus size={16} />
-                  </Button>
-                </div>
-
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {tools.map((skill, i) => (
-                    <div key={i} className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-sm">
-
-                      {skill}
-
-                      <button
-                        onClick={() => removeSkill(skill, tools, setTools)}
-                        className="text-gray-500 hover:text-red-500"
-                      >
-                        <X size={14} />
-                      </button>
-
-                    </div>
-                  ))}
-                </div>
-
-              </div>
-
-              {/* Communication */}
-              <div>
-
-                <p className="font-medium mb-2">Communication</p>
-
-                <div className="flex gap-3">
-                  <Input
-                    value={communicationInput}
-                    placeholder="Leadership"
-                    onChange={(e) => setCommunicationInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addSkill(communicationInput, setCommunicationInput, communication, setCommunication);
-                      }
-                    }}
-                  />
-
-                  <Button size="icon" variant="outline"
-                    onClick={() => addSkill(communicationInput, setCommunicationInput, communication, setCommunication)}
-                  >
-                    <Plus size={16} />
-                  </Button>
-                </div>
-
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {communication.map((skill, i) => (
-                    <div key={i} className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full text-sm">
-
-                      {skill}
-
-                      <button
-                        onClick={() => removeSkill(skill, communication, setCommunication)}
-                        className="text-gray-500 hover:text-red-500"
-                      >
-                        <X size={14} />
-                      </button>
-
-                    </div>
-                  ))}
-                </div>
-
-              </div>
-
             </div>
 
             {/* PROJECTS */}
