@@ -175,33 +175,41 @@ const ResumePreview = ({
 
       {/* SKILLS */}
 
-      {(languages.length ||
-        frameworks.length ||
-        tools.length ||
-        communication.length) > 0 && (
+      {(data.programmingLanguages ||
+        data.frameworksLibraries ||
+        data.toolsPlatforms ||
+        data.softSkills) && (
+          <>
+            <SectionTitle>Skills</SectionTitle>
 
-          <div style={{ marginTop: "16px" }}>
-
-            <h2>Skills</h2>
-
-            {languages.length > 0 && (
-              <p><strong>Languages:</strong> {languages.join(", ")}</p>
+            {data.programmingLanguages && (
+              <div style={{ marginBottom: "3px", color: "#333" }}>
+                <strong style={{ color: "#111" }}>Languages:</strong>{" "}
+                {data.programmingLanguages}
+              </div>
             )}
 
-            {frameworks.length > 0 && (
-              <p><strong>Frameworks:</strong> {frameworks.join(", ")}</p>
+            {data.frameworksLibraries && (
+              <div style={{ marginBottom: "3px", color: "#333" }}>
+                <strong style={{ color: "#111" }}>Frameworks:</strong>{" "}
+                {data.frameworksLibraries}
+              </div>
             )}
 
-            {tools.length > 0 && (
-              <p><strong>Tools:</strong> {tools.join(", ")}</p>
+            {data.toolsPlatforms && (
+              <div style={{ marginBottom: "3px", color: "#333" }}>
+                <strong style={{ color: "#111" }}>Tools:</strong>{" "}
+                {data.toolsPlatforms}
+              </div>
             )}
 
-            {communication.length > 0 && (
-              <p><strong>Communication:</strong> {communication.join(", ")}</p>
+            {data.softSkills && (
+              <div style={{ marginBottom: "3px", color: "#333" }}>
+                <strong style={{ color: "#111" }}>Communication:</strong>{" "}
+                {data.softSkills}
+              </div>
             )}
-
-          </div>
-
+          </>
         )}
 
       {/* PROJECTS */}
