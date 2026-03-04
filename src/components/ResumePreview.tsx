@@ -1,6 +1,7 @@
 import React from "react";
 import { formatText } from "@/utils/textFormatter";
-import ResumePreview from "@/components/ResumePreview";
+
+
 export interface ResumeData {
   fullName: string;
   phone: string;

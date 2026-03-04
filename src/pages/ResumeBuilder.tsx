@@ -1,6 +1,7 @@
 import html2pdf from "html2pdf.js";
 import { Plus, X } from "lucide-react";
 import MainHeader from "@/components/MainHeader";
+import ResumePreview from "@/components/ResumePreview";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React, { useState, useRef } from "react";
