@@ -581,14 +581,38 @@ const ResumeBuilder = () => {
             <div>
               <h3 className="font-semibold">Achievements</h3>
               <div className="flex gap-3">
-                <Input
+                <input
                   value={achievementInput}
                   placeholder="Won 1st Prize in Hackathon 2024"
                   onChange={(e) => setAchievementInput(e.target.value)}
+                  onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addAchievement();
+                    }
+                  }}
                 />
                 <Button size="sm" onClick={addAchievement}>
                   Add
                 </Button>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {achievements.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center bg-gray-200 px-2 py-1 rounded text-sm"
+                    >
+                      {item}
+                      <button
+                        className="ml-2 text-red-500"
+                        onClick={() =>
+                          setAchievements(achievements.filter((_, i) => i !== index))
+                        }
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <ul className="mt-2 text-sm space-y-1">

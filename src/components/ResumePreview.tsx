@@ -1,4 +1,5 @@
 import React from "react";
+import { formatText } from "@/utils/textFormatter";
 
 export interface ResumeData {
   fullName: string;
@@ -249,7 +250,7 @@ const ResumePreview = ({
           <ul style={{ paddingLeft: "18px", margin: 0 }}>
             {certBullets.map((item, i) => (
               <li key={i} style={{ marginBottom: "4px", lineHeight: "1.5", color: "#333" }}>
-                {item}
+                {formatText(item)}
               </li>
             ))}
           </ul>

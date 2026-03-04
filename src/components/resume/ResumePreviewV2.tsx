@@ -1,5 +1,6 @@
 import React from "react";
 import type { ResumeData } from "@/types/resume";
+import { formatText, titleCase } from "@/utils/textFormatter";
 
 const ACCENT = "#1E3A8A";
 const PRIMARY = "#111827";
@@ -95,7 +96,7 @@ const ResumePreviewV2 = ({
       >
         {/* Contact */}
         <div>
-          <SidebarHeading>Contact</SidebarHeading>
+          <SidebarHeading>Contact: </SidebarHeading>
           <div style={{ fontSize: "11.5px", lineHeight: "1.7", color: "rgba(255,255,255,0.85)" }}>
             {data.phone && <div>{data.phone}</div>}
             {data.email && <div style={{ wordBreak: "break-all" }}>{data.email}</div>}
@@ -107,7 +108,7 @@ const ResumePreviewV2 = ({
         {/* Skills */}
         {data.skills.filter(Boolean).length > 0 && (
           <div>
-            <SidebarHeading>Skills</SidebarHeading>
+            <SidebarHeading>Skills: </SidebarHeading>
             <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
               {data.skills.filter(Boolean).map((skill, i) => (
                 <span key={i} style={{ fontSize: "11.5px", color: "rgba(255,255,255,0.85)" }}>
@@ -121,7 +122,7 @@ const ResumePreviewV2 = ({
         {/* Tools */}
         {data.tools.filter(Boolean).length > 0 && (
           <div>
-            <SidebarHeading>Tools</SidebarHeading>
+            <SidebarHeading>Tools: </SidebarHeading>
             <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
               {data.tools.filter(Boolean).map((tool, i) => (
                 <span key={i} style={{ fontSize: "11.5px", color: "rgba(255,255,255,0.85)" }}>
@@ -135,7 +136,7 @@ const ResumePreviewV2 = ({
         {/* Certifications */}
         {data.certifications.filter(Boolean).length > 0 && (
           <div>
-            <SidebarHeading>Certifications</SidebarHeading>
+            <SidebarHeading>Certifications: </SidebarHeading>
             <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
               {data.certifications.filter(Boolean).map((cert, i) => (
                 <span key={i} style={{ fontSize: "11.5px", color: "rgba(255,255,255,0.85)" }}>
@@ -149,7 +150,7 @@ const ResumePreviewV2 = ({
         {/* Languages */}
         {data.languages.filter(Boolean).length > 0 && (
           <div>
-            <SidebarHeading>Languages</SidebarHeading>
+            <SidebarHeading>Languages: </SidebarHeading>
             <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
               {data.languages.filter(Boolean).map((lang, i) => (
                 <span key={i} style={{ fontSize: "11.5px", color: "rgba(255,255,255,0.85)" }}>
@@ -203,7 +204,7 @@ const ResumePreviewV2 = ({
         {/* Summary */}
         {data.summary && (
           <div>
-            <SectionHeading>Professional Summary</SectionHeading>
+            <SectionHeading>Professional Summary: </SectionHeading>
             <p style={{ fontSize: "12.5px", lineHeight: "1.6", color: SECONDARY, margin: 0 }}>
               {data.summary}
             </p>
@@ -213,7 +214,7 @@ const ResumePreviewV2 = ({
         {/* Experience */}
         {data.experience.length > 0 && (
           <div>
-            <SectionHeading>Experience</SectionHeading>
+            <SectionHeading>Experience: </SectionHeading>
             <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
               {data.experience.map((exp) => (
                 <div key={exp.id}>
@@ -232,17 +233,28 @@ const ResumePreviewV2 = ({
         )}
 
         {/* Projects */}
+
         {data.projects.length > 0 && (
           <div>
-            <SectionHeading>Projects</SectionHeading>
+            <SectionHeading>Projects: </SectionHeading>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               {data.projects.map((proj) => (
                 <div key={proj.id}>
-                  <strong style={{ fontSize: "13px", color: PRIMARY }}>{proj.name}</strong>
+                  <strong style={{ fontSize: "13px", color: PRIMARY }}>
+                    {titleCase(formatText(proj.name))}                  </strong>
+
                   {proj.description && (
-                    <p style={{ fontSize: "12px", color: SECONDARY, margin: "2px 0 4px" }}>{proj.description}</p>
+                    <p
+                      style={{
+                        fontSize: "12px",
+                        color: SECONDARY,
+                        margin: "3px 0 10px",
+                        lineHeight: "1.5"
+                      }}
+                    >
+                      {formatText(proj.description)}
+                    </p>
                   )}
-                  {proj.bullets.filter(Boolean).length > 0 && <BulletList items={proj.bullets} />}
                 </div>
               ))}
             </div>
@@ -252,7 +264,7 @@ const ResumePreviewV2 = ({
         {/* Education */}
         {data.education.length > 0 && (
           <div>
-            <SectionHeading>Education</SectionHeading>
+            <SectionHeading>Education: </SectionHeading>
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
               {data.education.map((edu) => (
                 <div key={edu.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
@@ -272,9 +284,8 @@ const ResumePreviewV2 = ({
         {/* Achievements */}
         {data.achievements.filter(Boolean).length > 0 && (
           <div>
-            <SectionHeading>Achievements</SectionHeading>
-            <BulletList items={data.achievements} />
-          </div>
+            <SectionHeading>Achievements: </SectionHeading>
+            <BulletList items={data.achievements.map(formatText)} />          </div>
         )}
       </div>
     </div>
