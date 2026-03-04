@@ -11,6 +11,25 @@ interface Education {
   year: string;
 }
 
+const ACTION_VERBS = [
+  "Developed", "Engineered", "Designed", "Built", "Implemented",
+  "Architected", "Optimized", "Deployed", "Integrated", "Automated",
+];
+
+function generateProjectBullets(projectName: string): string[] {
+  const name = projectName.trim();
+  const hash = name.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  const v1 = ACTION_VERBS[hash % ACTION_VERBS.length];
+  const v2 = ACTION_VERBS[(hash + 3) % ACTION_VERBS.length];
+  const v3 = ACTION_VERBS[(hash + 7) % ACTION_VERBS.length];
+
+  return [
+    `${v1} ${name} with modern tech stack ensuring scalable architecture and clean code practices.`,
+    `${v2} responsive UI components and RESTful API integration for seamless user experience.`,
+    `${v3} application for production deployment with optimized performance and error handling.`,
+  ];
+}
+
 const ResumeBuilder = () => {
   const [isPaid, setIsPaid] = useState(false);
 
@@ -19,6 +38,7 @@ const ResumeBuilder = () => {
     email: "",
     phone: "",
     linkedin: "",
+    github: "",
     objective: "",
     experience: "",
   });
@@ -269,6 +289,15 @@ const ResumeBuilder = () => {
                   onChange={(e) => handleChange("linkedin", e.target.value)}
                 />
               </div>
+
+              <div>
+                <label>GitHub</label>
+                <Input
+                  placeholder="github.com/rahul"
+                  value={form.github}
+                  onChange={(e) => handleChange("github", e.target.value)}
+                />
+              </div>
             </div>
 
             {/* OBJECTIVE */}
@@ -505,25 +534,47 @@ const ResumeBuilder = () => {
                   boxSizing: "border-box",
                 }}
               >
-                <div className="space-y-6">
-                  <div>
-                    <h1 className="text-3xl font-bold">
-                      {form.name || "Your Name"}
+                <div>
+                  {/* HEADER - Centered */}
+                  <div style={{ textAlign: "center", marginBottom: "16px" }}>
+                    <h1 style={{
+                      fontSize: "22px",
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      letterSpacing: "2px",
+                      margin: 0,
+                      color: "#111",
+                    }}>
+                      {form.name || "YOUR NAME"}
                     </h1>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {form.email || "your@email.com"}
-                      {form.phone && ` • +91 ${form.phone}`}
-                    </p>
-                    <hr className="my-4" />
+                    <div style={{
+                      fontSize: "12px",
+                      color: "#555",
+                      marginTop: "6px",
+                      display: "flex",
+                      flexWrap: "wrap",
+                      justifyContent: "center",
+                      gap: "6px 14px",
+                    }}>
+                      {form.phone && <span>+91 {form.phone}</span>}
+                      {form.email && <span>{form.email}</span>}
+                      {form.linkedin && (
+                        <span>{form.linkedin}</span>
+                      )}
+                      {form.github && (
+                        <span>{form.github}</span>
+                      )}
+                    </div>
                   </div>
 
-                  {/* OBJECTIVE */}
+                  {/* CAREER OBJECTIVE */}
                   {form.objective && (
                     <div>
-                      <h3 className="font-semibold uppercase text-sm tracking-wide">
-                        Career Objective
+                      <div style={{ borderTop: "1px solid #d1d5db", marginTop: "24px", marginBottom: "16px" }} />
+                      <h3 style={{ fontWeight: 600, textTransform: "uppercase", fontSize: "13px", letterSpacing: "1.5px", color: "#222", margin: "0 0 8px" }}>
+                        CAREER OBJECTIVE
                       </h3>
-                      <p className="text-sm text-gray-700 mt-2 leading-relaxed">
+                      <p style={{ fontSize: "12.5px", color: "#444", lineHeight: "1.6", margin: 0 }}>
                         {form.objective}
                       </p>
                     </div>
@@ -532,26 +583,26 @@ const ResumeBuilder = () => {
                   {/* EXPERIENCE */}
                   {form.experience && (
                     <div>
-                      <h3 className="font-semibold uppercase text-sm tracking-wide">
-                        Experience
+                      <div style={{ borderTop: "1px solid #d1d5db", marginTop: "24px", marginBottom: "16px" }} />
+                      <h3 style={{ fontWeight: 600, textTransform: "uppercase", fontSize: "13px", letterSpacing: "1.5px", color: "#222", margin: "0 0 8px" }}>
+                        EXPERIENCE
                       </h3>
-                      <p className="text-sm text-gray-700 mt-2 leading-relaxed">
+                      <p style={{ fontSize: "12.5px", color: "#444", lineHeight: "1.6", margin: 0 }}>
                         {form.experience}
                       </p>
                     </div>
                   )}
 
                   {/* EDUCATION */}
-                  {education.some(
-                    (edu) => edu.degree || edu.college || edu.year
-                  ) && (
+                  {education.some((edu) => edu.degree || edu.college || edu.year) && (
                     <div>
-                      <h3 className="font-semibold uppercase text-sm tracking-wide">
-                        Education
+                      <div style={{ borderTop: "1px solid #d1d5db", marginTop: "24px", marginBottom: "16px" }} />
+                      <h3 style={{ fontWeight: 600, textTransform: "uppercase", fontSize: "13px", letterSpacing: "1.5px", color: "#222", margin: "0 0 8px" }}>
+                        EDUCATION
                       </h3>
-                      <div className="mt-2 space-y-1">
+                      <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                         {education.map((edu, i) => (
-                          <p key={i} className="text-sm text-gray-700">
+                          <p key={i} style={{ fontSize: "12.5px", color: "#444", margin: 0 }}>
                             {edu.degree && <strong>{edu.degree}</strong>}
                             {edu.college && ` – ${edu.college}`}
                             {edu.year && ` (${edu.year})`}
@@ -561,59 +612,81 @@ const ResumeBuilder = () => {
                     </div>
                   )}
 
-                  {/* SKILLS */}
+                  {/* SKILLS - Badge style */}
                   {(languages.items.length > 0 ||
                     frameworks.items.length > 0 ||
                     libraries.items.length > 0 ||
                     tools.items.length > 0 ||
                     platforms.items.length > 0) && (
                     <div>
-                      <h3 className="font-semibold uppercase text-sm tracking-wide">
-                        Skills
+                      <div style={{ borderTop: "1px solid #d1d5db", marginTop: "24px", marginBottom: "16px" }} />
+                      <h3 style={{ fontWeight: 600, textTransform: "uppercase", fontSize: "13px", letterSpacing: "1.5px", color: "#222", margin: "0 0 10px" }}>
+                        SKILLS
                       </h3>
-                      <div className="mt-2 space-y-1 text-sm text-gray-700">
-                        {languages.items.length > 0 && (
-                          <p><strong>Languages:</strong> {languages.items.join(", ")}</p>
-                        )}
-                        {frameworks.items.length > 0 && (
-                          <p><strong>Frameworks:</strong> {frameworks.items.join(", ")}</p>
-                        )}
-                        {libraries.items.length > 0 && (
-                          <p><strong>Libraries:</strong> {libraries.items.join(", ")}</p>
-                        )}
-                        {tools.items.length > 0 && (
-                          <p><strong>Tools:</strong> {tools.items.join(", ")}</p>
-                        )}
-                        {platforms.items.length > 0 && (
-                          <p><strong>Platforms:</strong> {platforms.items.join(", ")}</p>
-                        )}
-                      </div>
+                      {[
+                        { label: "Languages", items: languages.items },
+                        { label: "Frameworks", items: frameworks.items },
+                        { label: "Libraries", items: libraries.items },
+                        { label: "Tools", items: tools.items },
+                        { label: "Platforms", items: platforms.items },
+                      ].filter(s => s.items.length > 0).map((section) => (
+                        <div key={section.label} style={{ marginBottom: "8px" }}>
+                          <span style={{ fontSize: "12px", fontWeight: 600, color: "#333" }}>{section.label}: </span>
+                          <span style={{ display: "inline-flex", flexWrap: "wrap", gap: "4px", verticalAlign: "middle" }}>
+                            {section.items.map((item, i) => (
+                              <span key={i} style={{
+                                display: "inline-block",
+                                background: "#f3f4f6",
+                                color: "#374151",
+                                fontSize: "11px",
+                                padding: "2px 8px",
+                                borderRadius: "4px",
+                                fontWeight: 500,
+                              }}>
+                                {item}
+                              </span>
+                            ))}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   )}
 
-                  {/* PROJECTS */}
+                  {/* PROJECTS - With AI-style bullets */}
                   {projects.length > 0 && (
                     <div>
-                      <h3 className="font-semibold uppercase text-sm tracking-wide">
-                        Projects
+                      <div style={{ borderTop: "1px solid #d1d5db", marginTop: "24px", marginBottom: "16px" }} />
+                      <h3 style={{ fontWeight: 600, textTransform: "uppercase", fontSize: "13px", letterSpacing: "1.5px", color: "#222", margin: "0 0 10px" }}>
+                        PROJECTS
                       </h3>
-                      <ul className="mt-2 text-sm text-gray-700 space-y-1">
-                        {projects.map((proj, i) => (
-                          <li key={i}>• {proj}</li>
-                        ))}
-                      </ul>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                        {projects.map((proj, i) => {
+                          const bullets = generateProjectBullets(proj);
+                          return (
+                            <div key={i}>
+                              <strong style={{ fontSize: "13px", color: "#222" }}>{proj}</strong>
+                              <ul style={{ paddingLeft: "16px", margin: "4px 0 0", listStyleType: "disc" }}>
+                                {bullets.map((b, bi) => (
+                                  <li key={bi} style={{ fontSize: "12px", color: "#555", lineHeight: "1.55", marginBottom: "2px" }}>{b}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   )}
 
                   {/* CERTIFICATIONS */}
                   {certs.length > 0 && (
                     <div>
-                      <h3 className="font-semibold uppercase text-sm tracking-wide">
-                        Certifications
+                      <div style={{ borderTop: "1px solid #d1d5db", marginTop: "24px", marginBottom: "16px" }} />
+                      <h3 style={{ fontWeight: 600, textTransform: "uppercase", fontSize: "13px", letterSpacing: "1.5px", color: "#222", margin: "0 0 8px" }}>
+                        CERTIFICATIONS
                       </h3>
-                      <ul className="mt-2 text-sm text-gray-700 space-y-1">
+                      <ul style={{ paddingLeft: "16px", margin: 0, listStyleType: "disc" }}>
                         {certs.map((c, i) => (
-                          <li key={i}>• {c}</li>
+                          <li key={i} style={{ fontSize: "12.5px", color: "#444", marginBottom: "3px" }}>{c}</li>
                         ))}
                       </ul>
                     </div>
@@ -622,12 +695,13 @@ const ResumeBuilder = () => {
                   {/* ACHIEVEMENTS */}
                   {achievements.length > 0 && (
                     <div>
-                      <h3 className="font-semibold uppercase text-sm tracking-wide">
-                        Achievements
+                      <div style={{ borderTop: "1px solid #d1d5db", marginTop: "24px", marginBottom: "16px" }} />
+                      <h3 style={{ fontWeight: 600, textTransform: "uppercase", fontSize: "13px", letterSpacing: "1.5px", color: "#222", margin: "0 0 8px" }}>
+                        ACHIEVEMENTS
                       </h3>
-                      <ul className="mt-2 text-sm text-gray-700 space-y-1">
+                      <ul style={{ paddingLeft: "16px", margin: 0, listStyleType: "disc" }}>
                         {achievements.map((a, i) => (
-                          <li key={i}>• {a}</li>
+                          <li key={i} style={{ fontSize: "12.5px", color: "#444", marginBottom: "3px" }}>{a}</li>
                         ))}
                       </ul>
                     </div>
